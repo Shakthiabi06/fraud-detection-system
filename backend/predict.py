@@ -53,8 +53,12 @@ def predict_transaction(transaction: dict) -> dict:
     if amount_value is None:
         raise ValueError("Missing required field: amount")
 
-    amount_scaled = scaler_amount.transform([[amount_value]])[0][0]
-    time_scaled = scaler_time.transform([[time_value]])[0][0]
+    amount_scaled = scaler_amount.transform(
+        pd.DataFrame([[amount_value]], columns=["Amount"])
+    )[0][0]
+    time_scaled = scaler_time.transform(
+        pd.DataFrame([[time_value]], columns=["Time"])
+    )[0][0]
 
     row = {col: transaction[col] for col in V_COLUMNS}
     row["Amount_scaled"] = amount_scaled
