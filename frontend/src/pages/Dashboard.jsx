@@ -1,5 +1,6 @@
 import Navbar from "../components/Navbar/Navbar";
 import KPIcard from "../components/KPIcards/KPIcard";
+import { dashboardStats } from "../mock/sampleData";
 
 export default function Dashboard() {
   return (
@@ -10,7 +11,22 @@ export default function Dashboard() {
 
       <KPIcard
         title="Total Transactions"
-        value="1000"
+        value={dashboardStats.totalTransactions}
+      />
+
+      <KPIcard
+        title="Fraud Transactions"
+        value={dashboardStats.fraudTransactions}
+      />
+
+      <KPIcard
+        title="Fraud Rate"
+        value={dashboardStats.fraudRate}
+      />
+
+      <KPIcard
+        title="Average Fraud Score"
+        value={dashboardStats.averageFraudScore}
       />
     </div>
   );
