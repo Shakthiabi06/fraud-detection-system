@@ -1,4 +1,19 @@
+import { useState } from "react";
+
 export default function TransactionTable({ transactions }) {
+  const [searchTerm, setSearchTerm] = useState("");
+  <input
+    type="text"
+    placeholder="Search Transaction ID..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+  />
+  const filteredTransactions = transactions.filter(
+    (transaction) =>
+        transaction.transaction_id
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+);
   return (
     <table border="1">
       <thead>
@@ -13,7 +28,7 @@ export default function TransactionTable({ transactions }) {
       </thead>
 
       <tbody>
-        {transactions.map((transaction) => (
+        {filteredTransactions.map((transaction) => (
           <tr key={transaction.transaction_id}>
             <td>{transaction.transaction_id}</td>
             <td>{transaction.amount}</td>
