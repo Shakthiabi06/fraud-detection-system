@@ -27,6 +27,7 @@ export default function TransactionTable({ transactions }) {
             <th>Country</th>
             <th>Merchant</th>
             <th>Fraud Score</th>
+            <th>Risk Level</th>
             <th>Prediction</th>
           </tr>
         </thead>

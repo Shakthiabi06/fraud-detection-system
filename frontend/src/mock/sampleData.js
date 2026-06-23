@@ -6,6 +6,7 @@ export const transactions = [
     merchant: "Amazon IN",
     fraud_score: 0.87,
     prediction: "Fraud",
+    risk_level: "Critical",
     timestamp: "2026-06-23T10:30:00"
   },
   {
@@ -14,7 +15,8 @@ export const transactions = [
     country: "US",
     merchant: "Walmart",
     fraud_score: 0.12,
-    prediction: "Legit",
+    prediction: "Legitimate",
+    risk_level: "Low",
     timestamp: "2026-06-23T11:00:00"
   }
 ];
