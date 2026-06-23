@@ -5,30 +5,32 @@ import { dashboardStats, transactions } from "../mock/sampleData";
 
 export default function Dashboard() {
   return (
-    <div>
+    <div className="dashboard-container">
       <Navbar />
 
-      <h1>Dashboard</h1>
+      <h1 className="dashboard-title">Dashboard</h1>
 
-      <KPIcard
-        title="Total Transactions"
-        value={dashboardStats.totalTransactions}
-      />
+      <div className="kpi-grid">
+        <KPIcard
+          title="Total Transactions"
+          value={dashboardStats.totalTransactions}
+        />
 
-      <KPIcard
-        title="Fraud Transactions"
-        value={dashboardStats.fraudTransactions}
-      />
+        <KPIcard
+          title="Fraud Transactions"
+          value={dashboardStats.fraudTransactions}
+        />
 
-      <KPIcard
-        title="Fraud Rate"
-        value={dashboardStats.fraudRate}
-      />
+        <KPIcard
+          title="Fraud Rate"
+          value={dashboardStats.fraudRate}
+        />
 
-      <KPIcard
-        title="Average Fraud Score"
-        value={dashboardStats.averageFraudScore}
-      />
+        <KPIcard
+          title="Average Fraud Score"
+          value={dashboardStats.averageFraudScore}
+        />
+      </div>
 
       <TransactionTable transactions={transactions} />
     </div>
