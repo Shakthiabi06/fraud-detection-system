@@ -1,0 +1,12 @@
+-- Locked transactions table schema.
+-- See docs/DATABASE.md for documentation of this schema.
+
+-- TODO: CREATE TABLE transactions (
+--   id SERIAL PRIMARY KEY,
+--   transaction_id TEXT NOT NULL,
+--   amount NUMERIC NOT NULL,
+--   country TEXT,
+--   fraud_score REAL,
+--   prediction INTEGER,
+--   created_at TIMESTAMP DEFAULT NOW()
+-- );
