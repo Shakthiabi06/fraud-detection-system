@@ -1,22 +1,20 @@
 :root {
-  --bg-main: #060913;       /* Deeper, cleaner dark background */
-  --bg-card: #0d1222;       /* Crisp card dark surface */
-  --bg-secondary: #141b30;  /* Input/Row highlight fill */
-  --bg-hover: #1a233d;
+  /* Refined, toned-down institutional palette */
+  --bg-main: #0B1020;
+  --bg-card: #121A2B;
+  --bg-secondary: #162033;
+  --bg-hover: #1E293B;
 
-  --blue-primary: #2d7dff;
-  --blue-light: #4ea1ff;
-  --cyan: #00f0ff;          /* High-voltage sharp cyan */
+  --border: rgba(255, 255, 255, 0.06);
 
-  --green: #00e676;         /* Vivid neon success green */
-  --red: #ff3d60;           /* Serious system warning alert red */
+  --text-primary: #F2F5FF;
+  --text-secondary: #9AA6C1;
+  --text-muted: #66718A;
 
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #475569;
-
-  --border: rgba(255, 255, 255, 0.04);
-  --border-focus: rgba(45, 125, 255, 0.4);
+  --blue: #3B82F6;
+  --cyan: #22C7D9;
+  --green: #22C55E;
+  --red: #EF4444;
 }
 
 * {
@@ -26,7 +24,11 @@
 }
 
 body {
-  background: #060913; /* Removed muddy gradient background */
+  /* Subtle, non-dominant radial background gradient */
+  background: 
+    radial-gradient(circle at 20% 10%, rgba(45, 125, 255, 0.08), transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(38, 215, 232, 0.05), transparent 45%),
+    var(--bg-main);
   min-height: 100vh;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   color: var(--text-primary);
@@ -35,94 +37,101 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Crisp, professional container bounding */
+/* Main Container: Fixed width alignment instead of full stretch */
 .dashboard-container {
   width: 100%;
-  max-width: 1600px;
+  max-width: 1440px;
   margin: 0 auto;
-  background: var(--bg-main);
-  padding: 12px;
+  background: transparent; /* Seamless blend into canvas layout */
+  padding: 24px;
 }
 
+/* Header Text Rules */
 .dashboard-title {
-  font-size: 1.75rem; /* Reduced oversized title */
+  font-size: 1.6rem;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.5px;
   color: var(--text-primary);
 }
 
 .dashboard-subtitle {
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   font-weight: 400;
   margin-top: 4px;
 }
 
-/* Sharper, precise data layouts */
+/* Symmetric layout fallback utilizing crisp spacing */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
   margin-bottom: 24px;
 }
 
+/* Card Rules: Reduced radius, padding adjustments, contrast over glow */
 .kpi-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 6px; /* Stripped rounded bubbly look to sharp technical styling */
-  padding: 16px 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: border-color 0.15s ease;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease, border-color 0.15s ease;
 }
 
 .kpi-card:hover {
-  border-color: var(--border-focus);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
 }
 
 .kpi-card h3 {
-  font-size: 0.725rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   margin-bottom: 8px;
 }
 
 .kpi-card p {
-  font-size: 1.85rem; /* Cleaned up text size ballooning */
+  font-size: 1.65rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  font-family: 'Inter', sans-serif;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace; /* Institutional typography look */
 }
 
+/* Content Blocks: Flat design styling (No heavy shadows, crisp edges) */
 .table-card, .chart-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 6px; /* Consistent sharp corners */
-  padding: 20px;
-  margin-bottom: 24px;
+  border-radius: 16px;
+  padding: 22px;
+  margin-top: 20px;
 }
 
+/* Search Input Upgrade with smooth expansion width transition */
 .search-input {
-  width: 320px;
-  background: var(--bg-main);
+  width: 260px;
+  background: var(--bg-secondary);
   border: 1px solid var(--border);
   color: var(--text-primary);
   padding: 8px 14px;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 0.8rem;
   outline: none;
-  font-size: 0.85rem;
-  transition: border-color 0.15s ease;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.15s ease;
 }
 
 .search-input:focus {
-  border-color: var(--blue-primary);
+  width: 280px;
+  border-color: var(--blue);
 }
 
+/* High-Density Exchange Ledger Tables */
 .transaction-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
 }
 
 .transaction-table th {
@@ -131,10 +140,10 @@ body {
   font-weight: 600;
   text-align: left;
   padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.775rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--border);
 }
 
 .transaction-table td {
@@ -145,32 +154,40 @@ body {
 
 .transaction-table tr:hover td {
   background: var(--bg-hover);
+  cursor: pointer;
 }
 
-/* System Monospace Risk Metrics */
-.tech-mono {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 0.85rem;
-}
-
+/* Formatting Inconsistencies and Badges */
 .risk-badge {
-  padding: 2px 8px;
-  border-radius: 2px; /* Sharp status square tags */
-  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   border: 1px solid transparent;
 }
 
 .low {
-  background: rgba(0, 230, 118, 0.06);
-  border-color: rgba(0, 230, 118, 0.2);
+  background: rgba(34, 197, 94, 0.06);
+  border-color: rgba(34, 197, 94, 0.15);
   color: var(--green);
 }
 
+.medium {
+  background: rgba(59, 130, 246, 0.06);
+  border-color: rgba(59, 130, 246, 0.15);
+  color: var(--blue);
+}
+
+.high {
+  background: rgba(239, 68, 68, 0.06);
+  border-color: rgba(239, 68, 68, 0.15);
+  color: var(--red);
+}
+
 .critical {
-  background: rgba(255, 61, 96, 0.06);
-  border-color: rgba(255, 61, 96, 0.2);
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.25);
   color: var(--red);
 }
