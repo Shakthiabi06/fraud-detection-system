@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { transactions, dashboardStats } from '../mock/sampleData';
 import FraudTrendChart from '../components/Charts/FraudTrendChart';
+import TransactionTable from "../components/TransactionTable/TransactionTable"; 
 
 function Dashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,16 +14,20 @@ function Dashboard() {
 
   return (
     <div className="dashboard-container">
-      <header style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+      {/* Header */}
+      <header>
         <div>
           <h1 className="dashboard-title">Fraud Risk Command</h1>
-          <p className="dashboard-subtitle">Real-time telemetry stream and pipeline security diagnostics</p>
+          <p className="dashboard-subtitle">
+            Real-time telemetry stream and pipeline security diagnostics
+          </p>
         </div>
         <div className="tech-mono" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
           ENV: DEVELOPMENT_CONTRACT_MODE
         </div>
       </header>
 
+      {/* KPIs */}
       <section className="kpi-grid">
         <div className="kpi-card">
           <h3>Total Volume</h3>
@@ -38,22 +43,20 @@ function Dashboard() {
         </div>
         <div className="kpi-card">
           <h3>Mean Risk Weight</h3>
-          <p className="tech-mono" style={{ color: 'var(--blue-light)' }}>{dashboardStats.averageFraudScore}</p>
+          <p className="tech-mono" style={{ color: 'var(--blue)' }}>{dashboardStats.averageFraudScore}</p>
         </div>
       </section>
 
+      {/* Chart */}
       <section className="chart-card">
-        <div style={{ marginBottom: '16px' }}>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: '600' }}>System Risk Vectors & Volume Trends</h2>
-        </div>
+        <h2>System Risk Vectors & Volume Trends</h2>
         <FraudTrendChart />
       </section>
 
+      {/* Transactions */}
       <main className="table-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '20px' }}>
-          <div>
-            <h2 style={{ fontSize: '1.1rem', fontWeight: '600' }}>Transaction Ledger</h2>
-          </div>
+          <h2>Transaction Ledger</h2>
           <input
             type="text"
             className="search-input tech-mono"
@@ -62,54 +65,10 @@ function Dashboard() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-
-        <div style={{ overflowX: 'auto' }}>
-          <table className="transaction-table">
-            <thead>
-              <tr>
-                <th>Transaction ID</th>
-                <th>Timestamp</th>
-                <th>Merchant Target</th>
-                <th>Amount</th>
-                <th>Origin</th>
-                <th>Anomalous Weight</th>
-                <th>Security Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTransactions.length > 0 ? (
-                filteredTransactions.map((txn) => (
-                  <tr key={txn.transaction_id}>
-                    <td className="tech-mono" style={{ color: 'var(--text-primary)', fontWeight: '600' }}>{txn.transaction_id}</td>
-                    <td className="tech-mono" style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                      {new Date(txn.timestamp).toISOString().replace('T', ' ').substring(0, 19)}
-                    </td>
-                    <td>{txn.merchant}</td>
-                    <td className="tech-mono" style={{ fontWeight: '600' }}>${txn.amount.toFixed(2)}</td>
-                    <td className="tech-mono">{txn.country}</td>
-                    <td className="tech-mono" style={{ fontWeight: '600', color: txn.fraud_score > 0.5 ? 'var(--red)' : 'var(--text-primary)' }}>
-                      {txn.fraud_score.toFixed(4)}
-                    </td>
-                    <td>
-                      <span className={`risk-badge ${txn.risk_level.toLowerCase()}`}>
-                        {txn.risk_level}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="7" className="tech-mono" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-                    NO VECTOR MATCHES FOUND IN ACTIVE BUFFER MEMORY.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <TransactionTable transactions={filteredTransactions} />
       </main>
     </div>
   );
 }
 
-export default Dashboard;
+export default Dashboard
