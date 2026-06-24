@@ -1,16 +1,13 @@
 :root {
-  /* Refined, toned-down institutional palette */
   --bg-main: #0B1020;
   --bg-card: #121A2B;
+  --bg-elevated: #162033;
   --bg-secondary: #162033;
-  --bg-hover: #1E293B;
-
+  --bg-hover: #1B2538;
   --border: rgba(255, 255, 255, 0.06);
-
   --text-primary: #F2F5FF;
   --text-secondary: #9AA6C1;
   --text-muted: #66718A;
-
   --blue: #3B82F6;
   --cyan: #22C7D9;
   --green: #22C55E;
@@ -24,8 +21,7 @@
 }
 
 body {
-  /* Subtle, non-dominant radial background gradient */
-  background: 
+  background:
     radial-gradient(circle at 20% 10%, rgba(45, 125, 255, 0.08), transparent 40%),
     radial-gradient(circle at 80% 90%, rgba(38, 215, 232, 0.05), transparent 45%),
     var(--bg-main);
@@ -35,20 +31,43 @@ body {
   padding: 24px;
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
+  position: relative;
+  overflow-x: hidden;
 }
 
-/* Main Container: Fixed width alignment instead of full stretch */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 0.7px, transparent 0.7px);
+  background-size: 8px 8px;
+  opacity: 0.03;
+  mix-blend-mode: screen;
+}
+
 .dashboard-container {
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-  background: transparent; /* Seamless blend into canvas layout */
   padding: 24px;
+  border-radius: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  background: transparent;
 }
 
-/* Header Text Rules */
+.dashboard-container > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 8px 2px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
 .dashboard-title {
-  font-size: 1.6rem;
+  font-size: 1.55rem;
   font-weight: 700;
   letter-spacing: -0.5px;
   color: var(--text-primary);
@@ -56,111 +75,170 @@ body {
 
 .dashboard-subtitle {
   color: var(--text-secondary);
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 400;
   margin-top: 4px;
+  max-width: 640px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* Symmetric layout fallback utilizing crisp spacing */
+.tech-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  letter-spacing: -0.01em;
+}
+
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px 18px;
+  margin-bottom: 22px;
 }
 
-/* Card Rules: Reduced radius, padding adjustments, contrast over glow */
 .kpi-card {
-  background: var(--bg-card);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  padding: 20px 18px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+  min-height: 118px;
+  grid-column: span 3;
+}
+
+.kpi-card:nth-child(1) {
+  grid-column: span 4;
+}
+
+.kpi-card:nth-child(2) {
+  grid-column: span 3;
+}
+
+.kpi-card:nth-child(3) {
+  grid-column: span 3;
+}
+
+.kpi-card:nth-child(4) {
+  grid-column: span 2;
 }
 
 .kpi-card:hover {
   border-color: rgba(255, 255, 255, 0.12);
   transform: translateY(-1px);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
 }
 
 .kpi-card h3 {
-  font-size: 0.7rem;
+  font-size: 0.71rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   font-weight: 600;
   color: var(--text-muted);
   margin-bottom: 8px;
 }
 
 .kpi-card p {
-  font-size: 1.65rem;
+  font-size: 1.55rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace; /* Institutional typography look */
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
 }
 
-/* Content Blocks: Flat design styling (No heavy shadows, crisp edges) */
-.table-card, .chart-card {
+.chart-card, .table-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 22px;
+  padding: 22px 24px;
   margin-top: 20px;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Search Input Upgrade with smooth expansion width transition */
+.chart-card {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.chart-card::before, .table-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+  pointer-events: none;
+}
+
+.chart-card h2,
+.table-card h2 {
+  font-size: 1.04rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
 .search-input {
   width: 260px;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
   color: var(--text-primary);
-  padding: 8px 14px;
-  border-radius: 6px;
+  padding: 9px 14px;
+  border-radius: 8px;
   font-size: 0.8rem;
   outline: none;
-  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.15s ease;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
 }
 
 .search-input:focus {
   width: 280px;
-  border-color: var(--blue);
+  border-color: rgba(59, 130, 246, 0.42);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
-/* High-Density Exchange Ledger Tables */
 .transaction-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.85rem;
 }
 
-.transaction-table th {
-  background: var(--bg-secondary);
+.transaction-table thead th {
+  background: rgba(255, 255, 255, 0.02);
   color: var(--text-secondary);
   font-weight: 600;
   text-align: left;
   padding: 12px 16px;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.05em;
   border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .transaction-table td {
   padding: 12px 16px;
   color: var(--text-primary);
   border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
 }
 
 .transaction-table tr:hover td {
-  background: var(--bg-hover);
+  background: rgba(255, 255, 255, 0.03);
   cursor: pointer;
 }
 
-/* Formatting Inconsistencies and Badges */
 .risk-badge {
+  display: inline-flex;
+  align-items: center;
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: 999px;
   font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -190,4 +268,62 @@ body {
   background: rgba(239, 68, 68, 0.1);
   border-color: rgba(239, 68, 68, 0.25);
   color: var(--red);
+}
+
+@media (max-width: 980px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .kpi-card,
+  .kpi-card:nth-child(1),
+  .kpi-card:nth-child(2),
+  .kpi-card:nth-child(3),
+  .kpi-card:nth-child(4) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 720px) {
+  body {
+    padding: 12px;
+  }
+
+  .dashboard-container {
+    padding: 16px;
+  }
+
+  .dashboard-container > header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .search-input:focus {
+    width: 100%;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+}
+
+/* Add monospace data engineering typography */
+.tech-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  letter-spacing: -0.02em;
+}
+
+/* Ensure header flexibility matches institutional SaaS specs */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
 }

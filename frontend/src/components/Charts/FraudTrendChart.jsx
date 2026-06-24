@@ -14,7 +14,6 @@ import {
 import { Chart } from 'react-chartjs-2';
 import { analyticsData } from '../../mock/sampleData';
 
-// Registering core Chart.js structures explicitly to prevent runtime engine crashes
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -28,6 +27,8 @@ ChartJS.register(
 );
 
 export default function FraudTrendChart() {
+  const styles = getComputedStyle(document.documentElement);
+
   const data = {
     labels: analyticsData.monthlyTrends.labels,
     datasets: [
@@ -35,7 +36,7 @@ export default function FraudTrendChart() {
         type: 'line',
         label: 'Fraud Incidents',
         data: analyticsData.monthlyTrends.fraudCounts,
-        borderColor: '#26d7e8', // --cyan
+        borderColor: styles.getPropertyValue('--cyan'),
         backgroundColor: 'rgba(38, 215, 232, 0.1)',
         tension: 0.4,
         fill: true,
@@ -45,7 +46,7 @@ export default function FraudTrendChart() {
         type: 'bar',
         label: 'Total Volume',
         data: analyticsData.monthlyTrends.legitimateCounts,
-        backgroundColor: 'rgba(45, 125, 255, 0.2)', // --blue-primary with opacity
+        backgroundColor: 'rgba(59, 130, 246, 0.2)',
         borderRadius: 6,
         yAxisID: 'y1'
       }
@@ -58,27 +59,27 @@ export default function FraudTrendChart() {
     plugins: {
       legend: {
         position: 'top',
-        labels: { color: '#a7b2d0', font: { family: 'Inter' } }
+        labels: { color: styles.getPropertyValue('--text-secondary'), font: { family: 'Inter' } }
       }
     },
     scales: {
       x: {
         grid: { color: 'rgba(255, 255, 255, 0.05)' },
-        ticks: { color: '#6e7895' }
+        ticks: { color: styles.getPropertyValue('--text-muted') }
       },
       y: {
         type: 'linear',
         display: true,
         position: 'left',
         grid: { color: 'rgba(255, 255, 255, 0.05)' },
-        ticks: { color: '#26d7e8' }
+        ticks: { color: styles.getPropertyValue('--cyan') }
       },
       y1: {
         type: 'linear',
         display: true,
         position: 'right',
         grid: { drawOnChartArea: false },
-        ticks: { color: '#4ea1ff' }
+        ticks: { color: styles.getPropertyValue('--blue') }
       }
     }
   };
