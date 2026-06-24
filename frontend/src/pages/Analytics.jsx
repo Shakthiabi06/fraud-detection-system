@@ -1,85 +1,103 @@
-import React from 'react';
+import { modelMetrics } from "../mock/sampleData";
+
+// Values are pulled from the candidate model in modelMetrics (sampleData.js)
+// instead of being typed twice. Previously this file had its own hardcoded
+// 94.0% / 88.0% / 91.0% / 0.96 that happened to match the Autoencoder row —
+// but only because someone copied them by hand, with no actual link between
+// the two. Now there's one source of truth.
+const candidateModel =
+  modelMetrics.find((model) => model.status === "Candidate") || modelMetrics[0];
+
+const formatPercent = (value) => `${(value * 100).toFixed(1)}%`;
+
+const metricDefinitions = [
+  {
+    title: "Precision",
+    value: formatPercent(candidateModel.precision),
+    body: "Of all transactions predicted as fraud, how many were actually fraud.",
+    tone: "cyan",
+  },
+  {
+    title: "Recall",
+    value: formatPercent(candidateModel.recall),
+    body: "Of all real fraud transactions, how many the model successfully detected.",
+    tone: "blue",
+  },
+  {
+    title: "F1 Score",
+    value: formatPercent(candidateModel.f1Score),
+    body: "Balanced score combining precision and recall for uneven fraud datasets.",
+    tone: "green",
+  },
+  {
+    title: "ROC AUC",
+    value: candidateModel.rocAuc.toFixed(2),
+    body: "How well the model separates fraud from legitimate transactions.",
+    tone: "amber",
+  },
+];
 
 export default function Analytics() {
-  // Mock data representing future backend ML evaluation outputs
-  const modelMetrics = [
-    {
-      name: "Isolation Forest (Baseline)",
-      precision: 0.89,
-      recall: 0.82,
-      f1Score: 0.85,
-      rocAuc: 0.91,
-      status: "Production Candidate"
-    },
-    {
-      name: "Autoencoder (Deep Learning)",
-      precision: 0.94,
-      recall: 0.88,
-      f1Score: 0.91,
-      rocAuc: 0.96,
-      status: "Testing Phase"
-    }
-  ];
-
   return (
     <div className="dashboard-container">
-      <header style={{ marginBottom: '32px' }}>
-        <h1 className="dashboard-title">Model Performance & Evaluation</h1>
-        <p className="dashboard-subtitle">Comparative diagnostics of operational machine learning fraud engines</p>
+      <header className="dashboard-hero">
+        <div>
+          <p className="eyebrow">ML support</p>
+          <h1 className="dashboard-title">Model Evaluation</h1>
+          <p className="dashboard-subtitle">
+            Mock analytics for precision, recall, F1, ROC AUC, and future model comparison.
+          </p>
+        </div>
+        <div className="run-status">
+          <span className="status-dot" />
+          <span className="tech-mono">Mock metrics</span>
+          <small>Waiting for backend</small>
+        </div>
       </header>
 
-      {/* Metric Definitions Explainer Grid */}
-      <section className="kpi-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
-        <div className="kpi-card">
-          <h3>Precision</h3>
-          <p style={{ fontSize: '1.8rem', color: 'var(--cyan)' }}>PPV Engine</p>
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-            Of all flagged anomalies, how many were <strong>actually</strong> fraud? Minimizes false alarms.
-          </span>
-        </div>
-        <div className="kpi-card">
-          <h3>Recall</h3>
-          <p style={{ fontSize: '1.8rem', color: 'var(--blue-light)' }}>Sensitivity</p>
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-            Of all real fraud out there, how many did we successfully catch? Minimizes leaked losses.
-          </span>
-        </div>
-        <div className="kpi-card">
-          <h3>F1-Score</h3>
-          <p style={{ fontSize: '1.8rem', color: 'var(--green)' }}>Harmonic Mean</p>
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-            The balanced benchmark weight combining Precision and Recall into a single quality matrix.
-          </span>
-        </div>
+      <section className="metric-definition-grid" aria-label="Model metric definitions">
+        {metricDefinitions.map((metric) => (
+          <article className={`metric-card ${metric.tone}`} key={metric.title}>
+            <span>{metric.title}</span>
+            <strong>{metric.value}</strong>
+            <p>{metric.body}</p>
+          </article>
+        ))}
       </section>
 
-      {/* Model Comparison Table Layout */}
-      <main className="table-card" style={{ marginTop: '24px' }}>
-        <h2 style={{ fontSize: '1.4rem', fontWeight: '600', marginBottom: '4px' }}>Model Comparison Matrix</h2>
-        <p className="dashboard-subtitle">Parallel comparison of Isolation Forest unsupervised limits vs Deep Autoencoder structural reconstruction weights.</p>
+      <main className="table-card">
+        <div className="table-toolbar">
+          <div>
+            <span className="panel-kicker">Comparison</span>
+            <h2>Isolation Forest vs Autoencoder</h2>
+          </div>
+          <span className="tech-mono muted-text">UI only until Person 1 API is ready</span>
+        </div>
 
-        <div style={{ overflowX: 'auto', marginTop: '16px' }}>
-          <table className="transaction-table">
+        <div className="transaction-table-wrap">
+          <table className="transaction-table static-table">
             <thead>
               <tr>
                 <th>Model Architecture</th>
+                <th>Accuracy</th>
                 <th>Precision</th>
                 <th>Recall</th>
                 <th>F1 Score</th>
                 <th>ROC AUC</th>
-                <th>Deployment Status</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {modelMetrics.map((model, idx) => (
-                <tr key={idx}>
-                  <td style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{model.name}</td>
-                  <td style={{ fontFamily: 'monospace', color: 'var(--cyan)' }}>{(model.precision * 100).toFixed(1)}%</td>
-                  <td style={{ fontFamily: 'monospace', color: 'var(--blue-light)' }}>{(model.recall * 100).toFixed(1)}%</td>
-                  <td style={{ fontFamily: 'monospace', color: 'var(--green)' }}>{(model.f1Score * 100).toFixed(1)}%</td>
-                  <td style={{ fontFamily: 'monospace' }}>{model.rocAuc.toFixed(2)}</td>
+              {modelMetrics.map((model) => (
+                <tr key={model.name}>
+                  <td title={model.name}>{model.name}</td>
+                  <td className="tech-mono">{formatPercent(model.accuracy)}</td>
+                  <td className="tech-mono">{formatPercent(model.precision)}</td>
+                  <td className="tech-mono">{formatPercent(model.recall)}</td>
+                  <td className="tech-mono">{formatPercent(model.f1Score)}</td>
+                  <td className="tech-mono">{model.rocAuc.toFixed(2)}</td>
                   <td>
-                    <span className={`risk-badge ${model.status === 'Production Candidate' ? 'low' : 'medium'}`}>
+                    <span className={`risk-badge ${model.status === "Candidate" ? "low" : "medium"}`}>
                       {model.status}
                     </span>
                   </td>
