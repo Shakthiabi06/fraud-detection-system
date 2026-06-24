@@ -1,93 +1,91 @@
+import React from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
-} from "chart.js";
+  Filler
+} from 'chart.js';
+import { Chart } from 'react-chartjs-2';
+import { analyticsData } from '../../mock/sampleData';
 
-import { Line } from "react-chartjs-2";
-
+// Registering core Chart.js structures explicitly to prevent runtime engine crashes
 ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
 export default function FraudTrendChart() {
   const data = {
-    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    labels: analyticsData.monthlyTrends.labels,
     datasets: [
       {
-        label: "Fraud Alerts",
-        data: [12, 19, 8, 15, 25, 18, 30],
-        borderColor: "#2D7DFF",
-        backgroundColor: "#2D7DFF",
-        borderWidth: 3,
+        type: 'line',
+        label: 'Fraud Incidents',
+        data: analyticsData.monthlyTrends.fraudCounts,
+        borderColor: '#26d7e8', // --cyan
+        backgroundColor: 'rgba(38, 215, 232, 0.1)',
         tension: 0.4,
-        pointRadius: 5,
-        pointHoverRadius: 7,
-        fill: false,
+        fill: true,
+        yAxisID: 'y'
       },
-    ],
+      {
+        type: 'bar',
+        label: 'Total Volume',
+        data: analyticsData.monthlyTrends.legitimateCounts,
+        backgroundColor: 'rgba(45, 125, 255, 0.2)', // --blue-primary with opacity
+        borderRadius: 6,
+        yAxisID: 'y1'
+      }
+    ]
   };
 
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-
     plugins: {
       legend: {
-        labels: {
-          color: "#FFFFFF",
-        },
-      },
-
-      title: {
-        display: false,
-      },
+        position: 'top',
+        labels: { color: '#a7b2d0', font: { family: 'Inter' } }
+      }
     },
-
     scales: {
       x: {
-        ticks: {
-          color: "#A7B2D0",
-        },
-
-        grid: {
-          color: "rgba(255,255,255,0.05)",
-        },
+        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+        ticks: { color: '#6e7895' }
       },
-
       y: {
-        ticks: {
-          color: "#A7B2D0",
-        },
-
-        grid: {
-          color: "rgba(255,255,255,0.05)",
-        },
-
-        beginAtZero: true,
+        type: 'linear',
+        display: true,
+        position: 'left',
+        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+        ticks: { color: '#26d7e8' }
       },
-    },
+      y1: {
+        type: 'linear',
+        display: true,
+        position: 'right',
+        grid: { drawOnChartArea: false },
+        ticks: { color: '#4ea1ff' }
+      }
+    }
   };
 
   return (
-    <div
-      style={{
-        height: "350px",
-        width: "100%",
-      }}
-    >
-      <Line data={data} options={options} />
+    <div style={{ height: '300px', width: '100%' }}>
+      <Chart type='bar' data={data} options={options} />
     </div>
   );
 }
