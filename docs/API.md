@@ -8,14 +8,34 @@ Do not change these route signatures without updating this doc first.
 Scores a single transaction.
 
 - TODO: request body schema (Time, V1-V28, Amount)
-- TODO: response schema ({ fraud_score, prediction })
+
+Example response:
+```json
+{
+  "transaction_id": "TXN001",
+  "fraud_score": 0.87,
+  "prediction": "Fraud",
+  "risk_level": "Critical"
+}
+```
 
 ## GET /transactions
 
 Returns stored transactions, joined with synthetic metadata (country, merchant) for display.
 
 - TODO: query params (pagination, filters)
-- TODO: response schema (list of transaction records)
+
+Example response:
+```json
+[
+  {
+    "transaction_id": "TXN001",
+    "fraud_score": 0.87,
+    "prediction": "Fraud",
+    "risk_level": "Critical"
+  }
+]
+```
 
 ## GET /fraud-summary
 

@@ -27,12 +27,18 @@ BACKEND_DIR = Path(__file__).resolve().parent
 if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
-from fastapi import FastAPI, HTTPException
+import logging
+
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
+from database import Transaction, get_db
 from predict import predict_transaction
 from utils.risk_rules import compute_final_risk
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Credit Card Fraud Detection API")
 
@@ -45,10 +51,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# This is temporary in-memory/stub storage until PostgreSQL integration in a future step.
-_TRANSACTIONS: list[dict] = []
-
 
 class TransactionRequest(BaseModel):
     transaction_id: str
@@ -95,7 +97,7 @@ def health():
 
 
 @app.post("/predict")
-def predict(request: TransactionRequest):
+def predict(request: TransactionRequest, db: Session = Depends(get_db)):
     # Mandatory boundary: only amount, time, and V1-V28 reach predict.py.
     # transaction_id, country, merchant_category, customer_id, channel must
     # never enter the model-facing path.
@@ -124,46 +126,54 @@ def predict(request: TransactionRequest):
         "risk_level": final_risk["risk_level"],
     }
 
-    _TRANSACTIONS.append(response)
+    # The fraud_score/prediction calculation above already succeeded and is
+    # returned to the caller regardless of persistence outcome — a DB write
+    # failure is a degraded-but-recoverable state, not a reason to fail the
+    # request.
+    try:
+        db.add(
+            Transaction(
+                transaction_id=request.transaction_id,
+                amount=request.amount,
+                country=request.country,
+                fraud_score=final_risk["final_score"],
+                prediction=final_risk["prediction"],
+                risk_level=final_risk["risk_level"],
+            )
+        )
+        db.commit()
+    except Exception:
+        logger.exception("Failed to persist transaction %s", request.transaction_id)
+        db.rollback()
 
     return response
 
 
 @app.get("/transactions")
-def get_transactions():
-    # This is temporary in-memory/stub storage until PostgreSQL integration in a future step.
-    if not _TRANSACTIONS:
-        return [
-            {
-                "transaction_id": "TXN001",
-                "fraud_score": 0.87,
-                "prediction": "Fraud",
-            }
-        ]
-
+def get_transactions(db: Session = Depends(get_db)):
+    # Most recent 100 transactions; could become a paginated endpoint later.
+    rows = (
+        db.query(Transaction)
+        .order_by(Transaction.created_at.desc())
+        .limit(100)
+        .all()
+    )
     return [
         {
-            "transaction_id": record["transaction_id"],
-            "fraud_score": record["fraud_score"],
-            "prediction": record["prediction"],
+            "transaction_id": row.transaction_id,
+            "fraud_score": row.fraud_score,
+            "prediction": row.prediction,
+            "risk_level": row.risk_level,
         }
-        for record in _TRANSACTIONS
+        for row in rows
     ]
 
 
 @app.get("/fraud-summary")
-def fraud_summary():
-    # This is temporary in-memory/stub analytics until PostgreSQL integration in a future step.
-    if not _TRANSACTIONS:
-        return {
-            "total_transactions": 10000,
-            "fraud_transactions": 100,
-            "fraud_rate": 1.0,
-        }
-
-    total = len(_TRANSACTIONS)
-    fraud_count = sum(1 for record in _TRANSACTIONS if record["prediction"] == "Fraud")
-    fraud_rate = round((fraud_count / total) * 100, 4) if total else 0.0
+def fraud_summary(db: Session = Depends(get_db)):
+    total = db.query(Transaction).count()
+    fraud_count = db.query(Transaction).filter(Transaction.prediction == "Fraud").count()
+    fraud_rate = round((fraud_count / total) * 100, 2) if total > 0 else 0.0
 
     return {
         "total_transactions": total,
