@@ -41,3 +41,15 @@ export const dashboardStats = {
       ) / transactions.length
     ).toFixed(2)
 };
+
+export const analyticsData = {
+  monthlyTrends: {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    fraudCounts: [4, 7, 2, 9, 5, 8],
+    legitimateCounts: [120, 145, 132, 168, 150, 185]
+  },
+  countryDistribution: {
+    labels: ['US', 'IN', 'UK', 'CA', 'DE'],
+    datasets: [12, 19, 3, 5, 2]
+  }
+};
