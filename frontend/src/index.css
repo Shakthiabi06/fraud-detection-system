@@ -891,6 +891,84 @@ kbd {
 .metric-card.green strong { color: var(--green); }
 .metric-card.amber strong { color: var(--amber); }
 
+/* ===== Confusion matrix section (Analytics page) ===== */
+
+.confusion-section {
+  margin-bottom: 18px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-card);
+}
+
+.confusion-note {
+  max-width: 760px;
+  margin: 10px 0 16px;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.confusion-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.confusion-cell {
+  padding: 14px 14px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.confusion-label {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 720;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.confusion-value {
+  display: block;
+  margin: 8px 0 4px;
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+}
+
+.confusion-cell.low .confusion-value { color: var(--green); }
+.confusion-cell.high .confusion-value { color: var(--amber); }
+.confusion-cell.critical .confusion-value { color: var(--red); }
+
+.confusion-detail {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.tradeoff-note {
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.045);
+}
+
+.tradeoff-note p {
+  max-width: 760px;
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 760px) {
+  .confusion-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 1040px) {
   .product-nav {
     grid-template-columns: 1fr auto;

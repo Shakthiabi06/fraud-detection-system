@@ -180,6 +180,23 @@ export const analyticsData = {
   },
 };
 
+// Illustrative confusion matrix for the candidate model (Autoencoder).
+// This is NOT counted from the 12 mock transactions above — there aren't
+// enough rows to produce a readable matrix, and they have no ground-truth
+// "actually fraud" label separate from the model's own prediction. Instead,
+// these counts are scaled to a round total (200) and solved so they
+// reproduce the Autoencoder's *stated* precision (0.94) and recall (0.88)
+// almost exactly. Treat this as a teaching illustration of what those
+// percentages mean in concrete counts, not as a measurement.
+export const candidateConfusionMatrix = {
+  truePositive: 44,
+  falseNegative: 6,
+  falsePositive: 3,
+  trueNegative: 147,
+  total: 200,
+  isIllustrative: true,
+};
+
 export const modelMetrics = [
   {
     name: "Isolation Forest",

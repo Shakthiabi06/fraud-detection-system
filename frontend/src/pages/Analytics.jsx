@@ -1,4 +1,4 @@
-import { modelMetrics } from "../mock/sampleData";
+import { candidateConfusionMatrix, modelMetrics } from "../mock/sampleData";
 
 // Values are pulled from the candidate model in modelMetrics (sampleData.js)
 // instead of being typed twice. Previously this file had its own hardcoded
@@ -37,6 +37,45 @@ const metricDefinitions = [
   },
 ];
 
+const {
+  truePositive,
+  falseNegative,
+  falsePositive,
+  trueNegative,
+  total: confusionTotal,
+} = candidateConfusionMatrix;
+
+const confusionCells = [
+  {
+    key: "tp",
+    label: "True Positive",
+    value: truePositive,
+    detail: "Correctly flagged as fraud",
+    tone: "low",
+  },
+  {
+    key: "fp",
+    label: "False Positive",
+    value: falsePositive,
+    detail: "Flagged as fraud, actually legitimate",
+    tone: "high",
+  },
+  {
+    key: "fn",
+    label: "False Negative",
+    value: falseNegative,
+    detail: "Missed — was actually fraud",
+    tone: "critical",
+  },
+  {
+    key: "tn",
+    label: "True Negative",
+    value: trueNegative,
+    detail: "Correctly identified as legitimate",
+    tone: "low",
+  },
+];
+
 export default function Analytics() {
   return (
     <div className="dashboard-container">
@@ -63,6 +102,44 @@ export default function Analytics() {
             <p>{metric.body}</p>
           </article>
         ))}
+      </section>
+
+      <section className="confusion-section" aria-label="Confusion matrix">
+        <div className="panel-header">
+          <div>
+            <span className="panel-kicker">Candidate model · Autoencoder</span>
+            <h2>What precision and recall mean in counts</h2>
+          </div>
+          <span className="tech-mono muted-text">Illustrative, scaled to {confusionTotal}</span>
+        </div>
+        <p className="confusion-note">
+          This grid is not measured from real transactions — there are only 12 in the
+          mock dataset, not enough to show a readable matrix. Instead these counts are
+          scaled to {confusionTotal} simulated transactions and solved to reproduce the
+          Autoencoder&apos;s stated precision ({formatPercent(candidateModel.precision)}) and
+          recall ({formatPercent(candidateModel.recall)}) almost exactly, so you can see what
+          those percentages mean as actual counts of caught fraud, missed fraud, and false alarms.
+        </p>
+        <div className="confusion-grid">
+          {confusionCells.map((cell) => (
+            <article className={`confusion-cell ${cell.tone}`} key={cell.key}>
+              <span className="confusion-label">{cell.label}</span>
+              <strong className="tech-mono confusion-value">{cell.value}</strong>
+              <p className="confusion-detail">{cell.detail}</p>
+            </article>
+          ))}
+        </div>
+        <div className="tradeoff-note">
+          <span className="panel-kicker">The tradeoff</span>
+          <p>
+            Catching more fraud (higher recall) usually means flagging more legitimate
+            transactions by mistake (lower precision), and vice versa. Above,{" "}
+            {falseNegative} fraud cases were still missed (false negatives) even at{" "}
+            {formatPercent(candidateModel.recall)} recall — pushing recall higher would
+            catch more of those, but would also raise the {falsePositive} false-positive
+            count, since the model would be flagging more borderline transactions overall.
+          </p>
+        </div>
       </section>
 
       <main className="table-card">
