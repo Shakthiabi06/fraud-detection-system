@@ -21,6 +21,15 @@ const riskSegments = Object.entries(riskToneMap).map(([label, tone]) => ({
   tone,
 }));
 
+// The 3 highest fraud-score transactions, used to fill the space below the
+// risk bands. This replaces a static decorative "skeleton-block" that was
+// never wired to real data — it just animated forever and looked like a
+// stuck loading state. This list is genuinely derived from `transactions`
+// and updates if the mock data (or eventually real data) changes.
+const topFlaggedTransactions = [...transactions]
+  .sort((a, b) => b.fraud_score - a.fraud_score)
+  .slice(0, 3);
+
 function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -147,6 +156,24 @@ function Dashboard() {
                 <strong className="tech-mono">{segment.value}</strong>
               </button>
             ))}
+          </div>
+
+          <div className="top-flagged">
+            <span className="panel-kicker top-flagged-kicker">Top flagged</span>
+            <div className="top-flagged-list">
+              {topFlaggedTransactions.map((txn) => (
+                <button
+                  className="top-flagged-row"
+                  type="button"
+                  key={txn.transaction_id}
+                  title={`${txn.merchant} — ${txn.prediction}`}
+                >
+                  <span className={`risk-marker ${riskToneMap[txn.risk_level] || "low"}`} />
+                  <span className="tech-mono top-flagged-id">{txn.transaction_id}</span>
+                  <strong className="tech-mono">{txn.fraud_score.toFixed(2)}</strong>
+                </button>
+              ))}
+            </div>
           </div>
         </aside>
       </section>
