@@ -188,6 +188,23 @@ export const analyticsData = {
 // reproduce the Autoencoder's *stated* precision (0.94) and recall (0.88)
 // almost exactly. Treat this as a teaching illustration of what those
 // percentages mean in concrete counts, not as a measurement.
+// Fixed score population for the interactive threshold slider on the
+// Analytics page. These are NOT real model outputs — they're a generated,
+// reproducible set of "fraud likelihood" scores (0-1) for 50 simulated
+// fraud cases and 150 simulated legitimate cases, built so that at a
+// threshold of ~0.58 the resulting precision/recall land almost exactly on
+// the Autoencoder's stated metrics (94% precision, 88% recall) elsewhere on
+// this page. Moving the threshold slider recomputes TP/FP/FN/TN live by
+// counting how many scores in each group fall above/below that line —
+// this lets you feel the precision/recall tradeoff instead of just reading
+// two static numbers. Fixed (not randomly regenerated) so the demo behaves
+// the same every time you reload the page.
+export const fraudLikelihoodScores = {
+  fraudCases: [0.754, 0.749, 0.76, 0.906, 0.757, 0.51, 0.84, 0.732, 0.741, 0.801, 0.822, 0.989, 0.898, 0.8, 0.647, 0.597, 0.824, 0.999, 0.787, 0.761, 0.876, 0.518, 0.724, 0.868, 0.937, 0.737, 0.848, 0.825, 0.921, 0.58, 0.882, 0.507, 0.308, 0.671, 0.615, 0.938, 0.9, 0.561, 0.933, 0.6, 0.764, 0.727, 0.801, 0.927, 0.895, 0.843, 0.897, 0.866, 0.667, 0.651],
+  legitimateCases: [0.145, 0.3, 0.18, 0.594, 0.089, 0.044, 0.343, 0.447, 0.301, 0.354, 0.448, 0.205, 0.001, 0.135, 0.372, 0.001, 0.225, 0.261, 0.17, 0.336, 0.313, 0.591, 0.319, 0.122, 0.13, 0.087, 0.372, 0.129, 0.209, 0.34, 0.104, 0.173, 0.001, 0.047, 0.129, 0.287, 0.411, 0.217, 0.262, 0.247, 0.394, 0.363, 0.264, 0.058, 0.365, 0.281, 0.416, 0.215, 0.532, 0.163, 0.475, 0.238, 0.137, 0.039, 0.196, 0.448, 0.351, 0.33, 0.001, 0.334, 0.309, 0.132, 0.12, 0.22, 0.496, 0.051, 0.152, 0.438, 0.149, 0.162, 0.236, 0.021, 0.255, 0.026, 0.362, 0.221, 0.585, 0.265, 0.439, 0.011, 0.2, 0.272, 0.499, 0.001, 0.378, 0.315, 0.465, 0.334, 0.228, 0.137, 0.02, 0.251, 0.189, 0.543, 0.122, 0.271, 0.001, 0.157, 0.262, 0.352, 0.452, 0.213, 0.041, 0.293, 0.303, 0.299, 0.108, 0.401, 0.234, 0.332, 0.424, 0.317, 0.266, 0.564, 0.259, 0.173, 0.238, 0.457, 0.239, 0.303, 0.411, 0.138, 0.001, 0.268, 0.257, 0.123, 0.359, 0.317, 0.061, 0.303, 0.189, 0.001, 0.292, 0.213, 0.101, 0.304, 0.298, 0.128, 0.284, 0.382, 0.106, 0.281, 0.22, 0.583, 0.001, 0.331, 0.171, 0.204, 0.524, 0.219],
+  defaultThreshold: 0.58,
+};
+
 export const candidateConfusionMatrix = {
   truePositive: 44,
   falseNegative: 6,
