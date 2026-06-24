@@ -148,11 +148,6 @@ function Dashboard() {
               </button>
             ))}
           </div>
-          <div className="skeleton-block" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </div>
         </aside>
       </section>
 
