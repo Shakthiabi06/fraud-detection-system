@@ -41,7 +41,7 @@ export default function Dashboard() {
           <p>Fraud alerts detected over time</p>
         </div>
 
-        <FraudTrendChart />
+        {/* <FraudTrendChart /> */}
       </div>
       <div className="table-card">
         <h2>Recent Transactions</h2>
