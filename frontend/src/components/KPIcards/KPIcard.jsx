@@ -1,8 +1,23 @@
-export default function KPIcard({ title, value }) {
+// variant controls sizing/emphasis to match the kpi-grid layout in index.css:
+// "primary" -> spans 5 cols, larger text (was .primary-kpi)
+// "compact" -> spans 2 cols (was .compact-kpi)
+// "compact-offset" -> spans 2 cols, nudged down (was .compact-kpi.offset-kpi)
+// "latency" -> spans 3 cols (was .latency-kpi)
+const variantClassMap = {
+  primary: "primary-kpi",
+  compact: "compact-kpi",
+  "compact-offset": "compact-kpi offset-kpi",
+  latency: "latency-kpi",
+};
+
+export default function KPIcard({ title, value, subtitle, variant }) {
+  const variantClass = variantClassMap[variant] || "";
+
   return (
-    <div className="kpi-card">
-      <h3>{title}</h3>
+    <article className={`kpi-card${variantClass ? ` ${variantClass}` : ""}`}>
+      <span>{title}</span>
       <p>{value}</p>
-    </div>
+      {subtitle && <small>{subtitle}</small>}
+    </article>
   );
 }
