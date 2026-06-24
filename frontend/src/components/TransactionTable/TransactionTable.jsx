@@ -13,13 +13,14 @@ export default function TransactionTable({ transactions }) {
   return (
     <div>
       <input
+        className="search-input"
         type="text"
         placeholder="Search Transaction ID..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
 
-      <table border="1">
+      <table border="1" className="transaction-table">
         <thead>
           <tr>
             <th>ID</th>
@@ -40,6 +41,11 @@ export default function TransactionTable({ transactions }) {
               <td>{transaction.country}</td>
               <td>{transaction.merchant}</td>
               <td>{transaction.fraud_score}</td>
+              <td>
+                <span className={`risk-badge ${transaction.risk_level.toLowerCase()}`}>
+                  {transaction.risk_level}
+                </span>
+              </td>
               <td>{transaction.prediction}</td>
             </tr>
           ))}
