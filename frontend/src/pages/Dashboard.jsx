@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { transactions, dashboardStats } from '../mock/sampleData';
+import FraudTrendChart from '../components/Charts/FraudTrendChart';
 
 function Dashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -39,9 +40,19 @@ function Dashboard() {
         </div>
       </section>
 
+      {/* Dynamic Data Visualization Section */}
+      <section className="chart-card" style={{ marginBottom: '30px' }}>
+        <div className="chart-header" style={{ marginBottom: '16px' }}>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: '600' }}>System Risk Vectors & Volume Trends</h2>
+          <p style={{ color: 'var(--text-secondary)' }}>Correlating anomaly spikes against systemic transaction baselines</p>
+        </div>
+        <FraudTrendChart />
+      </section>
+
       {/* Main Content Layout Grid */}
       <main className="table-card">
-        <div style={{ display: 'flex', justifyContent: 'between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '8px' }}>
+        {/* FIXED: changed 'between' to 'space-between' */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
           <div>
             <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '4px' }}>Transaction Ledger</h2>
             <p className="dashboard-subtitle" style={{ margin: 0 }}>Reviewing anomalous behavior & payload risk rankings</p>
@@ -51,7 +62,8 @@ function Dashboard() {
             className="search-input"
             placeholder="Search ID, merchant, country..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(e.value)}
+            style={{ marginBottom: 0 }} // Clean vertical symmetry align
           />
         </div>
 
