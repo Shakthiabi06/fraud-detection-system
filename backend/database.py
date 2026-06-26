@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from sqlalchemy import DECIMAL, Column, Float, Integer, String, TIMESTAMP, create_engine, func
+from sqlalchemy import DECIMAL, Boolean, Column, Float, Integer, String, TIMESTAMP, create_engine, func
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 # Load backend/.env relative to this file so DATABASE_URL resolves
@@ -40,6 +40,7 @@ class Transaction(Base):
     fraud_score = Column(Float)
     prediction = Column(String(20))
     risk_level = Column(String(20))
+    alert_triggered = Column(Boolean, default=False)
     created_at = Column(TIMESTAMP, server_default=func.now())
 
 

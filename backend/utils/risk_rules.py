@@ -5,6 +5,10 @@ it is not part of model training and must stay separate from the ML pipeline.
 Rules use synthetic/display metadata (e.g. country) that the model never sees.
 """
 
+import logging
+
+logger = logging.getLogger("fraud_alerts")
+
 COUNTRY_RISK_MAP = {
     "IN": 0.1,
     "US": 0.1,
@@ -100,11 +104,29 @@ def compute_final_risk(
     final_score = round(final_score, 4)
 
     prediction = "Fraud" if final_score > 0.5 else "Legitimate"
+    risk_level_value = risk_level(final_score)
+
+    # alert_triggered follows the project's locked alert rule: fraud_score > 0.85.
+    # This signal lets the frontend build dashboard notifications without needing
+    # real email infrastructure — email delivery is intentionally out of scope
+    # for this step; this only exposes the trigger condition as data.
+    alert_triggered = final_score > 0.85
+
+    # This log line is a stand-in for a future notification channel.
+    # The decision of WHEN to alert stays separate from HOW alerts are delivered.
+    if alert_triggered:
+        logger.warning(
+            "[ALERT] High-risk transaction flagged: "
+            "fraud_score=%.4f, risk_level=%s",
+            final_score,
+            risk_level_value,
+        )
 
     return {
         "final_score": final_score,
         "prediction": prediction,
-        "risk_level": risk_level(final_score),
+        "risk_level": risk_level_value,
+        "alert_triggered": alert_triggered,
         "breakdown": {
             "ml_fraud_score": round(float(ml_fraud_score), 4),
             "amount_risk": round(a_risk, 4),
