@@ -1,10 +1,14 @@
 import { useMemo, useState } from "react";
 import TransactionTable from "../components/TransactionTable/TransactionTable";
-import { dashboardStats, transactions } from "../mock/sampleData";
+import { transactions as mockTransactions } from "../mock/sampleData";
+import { getTransactions } from "../services/api";
+import { useFetchData } from "../hooks/useFetchData";
 
 export default function Transactions() {
   const [searchTerm, setSearchTerm] = useState("");
   const [riskFilter, setRiskFilter] = useState("All");
+
+  const { data: transactions, loading } = useFetchData(mockTransactions, getTransactions);
 
   const filteredTransactions = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -20,7 +24,7 @@ export default function Transactions() {
 
       return matchesRisk && matchesSearch;
     });
-  }, [riskFilter, searchTerm]);
+  }, [riskFilter, searchTerm, transactions]);
 
   return (
     <div className="dashboard-container">
@@ -29,12 +33,14 @@ export default function Transactions() {
           <p className="eyebrow">Transaction ledger</p>
           <h1 className="dashboard-title">Review Queue</h1>
           <p className="dashboard-subtitle">
-            Search, sort, and triage mock transactions before the backend contract is ready.
+            Search, sort, and triage transactions across payment corridors.
           </p>
         </div>
         <div className="run-status">
           <span className="status-dot" />
-          <span className="tech-mono">{dashboardStats.totalTransactions} mock rows</span>
+          <span className="tech-mono">
+            {loading ? "Syncing..." : `${transactions.length} rows`}
+          </span>
           <small>Frontend-only mode</small>
         </div>
       </header>
