@@ -124,6 +124,7 @@ def predict(request: TransactionRequest, db: Session = Depends(get_db)):
         "fraud_score": final_risk["final_score"],
         "prediction": final_risk["prediction"],
         "risk_level": final_risk["risk_level"],
+        "alert_triggered": final_risk["alert_triggered"],
     }
 
     # The fraud_score/prediction calculation above already succeeded and is
@@ -139,6 +140,7 @@ def predict(request: TransactionRequest, db: Session = Depends(get_db)):
                 fraud_score=final_risk["final_score"],
                 prediction=final_risk["prediction"],
                 risk_level=final_risk["risk_level"],
+                alert_triggered=final_risk["alert_triggered"],
             )
         )
         db.commit()
@@ -161,9 +163,13 @@ def get_transactions(db: Session = Depends(get_db)):
     return [
         {
             "transaction_id": row.transaction_id,
+            "amount": float(row.amount) if row.amount is not None else None,
+            "country": row.country,
             "fraud_score": row.fraud_score,
             "prediction": row.prediction,
             "risk_level": row.risk_level,
+            "alert_triggered": row.alert_triggered,
+            "created_at": row.created_at.isoformat() if row.created_at is not None else None,
         }
         for row in rows
     ]
