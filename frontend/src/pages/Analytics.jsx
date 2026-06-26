@@ -1,4 +1,5 @@
 import { candidateConfusionMatrix, modelMetrics } from "../mock/sampleData";
+import ThresholdSlider from "../components/Charts/ThresholdSlider";
 
 // Values are pulled from the candidate model in modelMetrics (sampleData.js)
 // instead of being typed twice. Previously this file had its own hardcoded
@@ -140,6 +141,8 @@ export default function Analytics() {
             count, since the model would be flagging more borderline transactions overall.
           </p>
         </div>
+
+        <ThresholdSlider />
       </section>
 
       <main className="table-card">
