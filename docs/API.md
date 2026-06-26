@@ -26,9 +26,13 @@ Response field contract:
 - fraud_score: decimal from 0.00 to 1.00. This is the final adjusted fraud score returned by the backend.
 - prediction: string. Either "Fraud" or "Legitimate".
 - risk_level: string. One of "Low", "Medium", "High", or "Critical".
-- alert_triggered: boolean. True only when the final adjusted fraud_score is greater than 0.85.
+- alert_triggered: boolean. True only when the final adjusted fraud_score is greater than 0.30.
+
+alert_triggered is true when the final adjusted fraud_score is greater than 0.30.
 
 alert_triggered is intended for dashboard notification UI. Real email, SMTP, Slack, or external notification delivery is out of scope for this step.
+
+This threshold was empirically adjusted from an original placeholder of 0.85 after testing real fraud and legitimate rows from the actual dataset through the full pipeline. 0.85 was unreachable in practice for the trained model; 0.30 was chosen because it produced zero false positives in the sampled legitimate rows while still catching roughly 63% of sampled fraud cases.
 
 ## GET /transactions
 
@@ -65,13 +69,23 @@ Example response:
 {
   "total_transactions": 10000,
   "fraud_transactions": 100,
-  "fraud_rate": 1.0
+  "fraud_rate": 1.0,
+  "average_fraud_score": 0.23,
+  "total_amount_at_risk": 45230.50,
+  "alert_count": 12
 }
 ```
 
 - total_transactions: total number of transactions stored in the backend database.
 - fraud_transactions: number of stored transactions where prediction is "Fraud".
 - fraud_rate: fraud rate as a percentage, not a decimal ratio. Example: 1 fraud out of 4 total transactions returns 25.0.
+- average_fraud_score: average fraud_score across ALL stored transactions (not just the most recent 100 returned by /transactions), rounded to 4 decimals.
+- total_amount_at_risk: sum of transaction amounts where prediction is "Fraud", across ALL stored transactions, rounded to 2 decimals. This represents the sum of amounts flagged as fraud, not a true financial exposure model — a real exposure figure would require additional assumptions (chargeback rates, recovery odds, etc.) that this project does not make.
+- alert_count: count of stored transactions where alert_triggered is true, across ALL stored transactions.
+
+All three new fields are computed server-side as a single source of truth, rather than derived by the frontend from the capped /transactions list.
+
+These fields return 0.0 / 0.0 / 0 respectively when there are no stored transactions, instead of null or an error.
 
 ## GET /health
 

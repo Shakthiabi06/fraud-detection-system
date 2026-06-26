@@ -32,6 +32,7 @@ import logging
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from database import Transaction, get_db
@@ -181,8 +182,26 @@ def fraud_summary(db: Session = Depends(get_db)):
     fraud_count = db.query(Transaction).filter(Transaction.prediction == "Fraud").count()
     fraud_rate = round((fraud_count / total) * 100, 2) if total > 0 else 0.0
 
+    avg_fraud_score = db.query(func.avg(Transaction.fraud_score)).scalar()
+    average_fraud_score = round(float(avg_fraud_score), 4) if avg_fraud_score is not None else 0.0
+
+    # total_amount_at_risk is the sum of transaction amounts flagged as fraud,
+    # not a true financial exposure model — that would require assumptions
+    # this project doesn't make (e.g. chargeback rates, recovery odds).
+    amount_at_risk = (
+        db.query(func.sum(Transaction.amount))
+        .filter(Transaction.prediction == "Fraud")
+        .scalar()
+    )
+    total_amount_at_risk = round(float(amount_at_risk), 2) if amount_at_risk is not None else 0.0
+
+    alert_count = db.query(Transaction).filter(Transaction.alert_triggered == True).count()  # noqa: E712
+
     return {
         "total_transactions": total,
         "fraud_transactions": fraud_count,
         "fraud_rate": fraud_rate,
+        "average_fraud_score": average_fraud_score,
+        "total_amount_at_risk": total_amount_at_risk,
+        "alert_count": alert_count,
     }

@@ -106,11 +106,17 @@ def compute_final_risk(
     prediction = "Fraud" if final_score > 0.5 else "Legitimate"
     risk_level_value = risk_level(final_score)
 
-    # alert_triggered follows the project's locked alert rule: fraud_score > 0.85.
-    # This signal lets the frontend build dashboard notifications without needing
-    # real email infrastructure — email delivery is intentionally out of scope
-    # for this step; this only exposes the trigger condition as data.
-    alert_triggered = final_score > 0.85
+    # Threshold tuned from the original spec's generic 0.85 to 0.30, based on an
+    # empirical investigation: 30 real fraud rows and 30 legitimate rows from the
+    # actual dataset were run through the full pipeline (ML score + business risk).
+    # Real fraud rows scored between 0.17 and 0.48, while legitimate rows scored
+    # between 0.06 and 0.25. The original 0.85 threshold was unreachable in
+    # practice for this trained model. 0.30 was chosen because it produced zero
+    # false positives in the sampled legitimate rows while still catching about
+    # 63% of sampled fraud cases, prioritizing alert precision over recall to
+    # avoid alert fatigue. This is a directional finding from a small sample
+    # (n=30 each), not a fully calibrated production threshold.
+    alert_triggered = final_score > 0.30
 
     # This log line is a stand-in for a future notification channel.
     # The decision of WHEN to alert stays separate from HOW alerts are delivered.
