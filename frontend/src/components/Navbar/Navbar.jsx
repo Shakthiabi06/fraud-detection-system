@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { getFraudSummary, USE_LIVE_API } from "../../services/api";
 
 const navItems = [
   { label: "Dashboard", to: "/" },
@@ -8,16 +9,32 @@ const navItems = [
 ];
 
 export default function Navbar() {
-  // Placeholder state: there's no real notification feed yet (that depends
-  // on Person 1's backend). Wiring this to actual state instead of always
-  // rendering the red dot means the UI won't lie about having unread
-  // alerts when it doesn't. Set this from real data once notifications exist.
-  const [hasUnreadNotifications] = useState(false);
+  // In live mode, polls /fraud-summary every 30 seconds to check
+  // alert_count — lights up the notification dot when there are active
+  // alerts. In mock mode stays false (no real alerts to report).
+  const [hasAlerts, setHasAlerts] = useState(false);
+
+  useEffect(() => {
+    if (!USE_LIVE_API) return;
+
+    const checkAlerts = async () => {
+      try {
+        const summary = await getFraudSummary();
+        setHasAlerts((summary.alertCount ?? 0) > 0);
+      } catch {
+        // Silently ignore — a failed poll shouldn't break the nav
+      }
+    };
+
+    checkAlerts();
+    const interval = setInterval(checkAlerts, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <nav className="product-nav">
-      <NavLink className="wordmark" to="/" aria-label="Fraud Risk Command home">
-        Sentinel Ledger
+      <NavLink className="wordmark" to="/" aria-label="Sentinel home">
+        Sentinel
       </NavLink>
       <div className="nav-tabs" aria-label="Primary navigation">
         {navItems.map((item) => (
@@ -32,8 +49,12 @@ export default function Navbar() {
         ))}
       </div>
       <div className="nav-actions">
-        <button className="notification-button" type="button" aria-label="Notifications">
-          {hasUnreadNotifications && <span />}
+        <button
+          className="notification-button"
+          type="button"
+          aria-label={hasAlerts ? "Active alerts" : "No alerts"}
+        >
+          {hasAlerts && <span />}
         </button>
         <button className="profile-button" type="button">
           <span>SK</span>
