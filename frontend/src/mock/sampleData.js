@@ -217,16 +217,16 @@ export const candidateConfusionMatrix = {
 export const modelMetrics = [
   {
     name: "Isolation Forest",
-    accuracy: 0.91,
-    precision: 0.89,
-    recall: 0.82,
-    f1Score: 0.85,
+    accuracy: 0.997,
+    precision: 0.242,
+    recall: 0.306,
+    f1Score: 0.270,
     rocAuc: 0.91,
     status: "Baseline",
   },
   {
     name: "Autoencoder",
-    accuracy: 0.94,
+    accuracy: 0.994,
     precision: 0.94,
     recall: 0.88,
     f1Score: 0.91,
