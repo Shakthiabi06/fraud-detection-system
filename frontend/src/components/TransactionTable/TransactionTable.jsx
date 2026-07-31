@@ -3,14 +3,14 @@ import { useMemo, useState } from "react";
 const rowsPerPage = 8;
 
 const columns = [
-  { key: "transaction_id", label: "Transaction ID" },
-  { key: "merchant", label: "Merchant" },
-  { key: "country", label: "Origin" },
-  { key: "amount", label: "Amount" },
-  { key: "fraud_score", label: "Fraud Score" },
-  { key: "prediction", label: "Prediction" },
-  { key: "risk_level", label: "Risk Level" },
-  { key: "timestamp", label: "Timestamp" },
+  { key: "transaction_id", label: "Transaction ID", width: "13%" },
+  { key: "merchant", label: "Merchant", width: "15%" },
+  { key: "country", label: "Origin", width: "9%" },
+  { key: "amount", label: "Amount", width: "11%" },
+  { key: "fraud_score", label: "Fraud Score", width: "12%" },
+  { key: "prediction", label: "Prediction", width: "11%" },
+  { key: "risk_level", label: "Risk Level", width: "12%" },
+  { key: "timestamp", label: "Timestamp", width: "17%" },
 ];
 
 const formatCurrency = (amount) => {

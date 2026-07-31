@@ -367,7 +367,7 @@ a {
 
 .chart-card {
   min-height: 428px;
-  padding: 20px 22px 18px;
+  padding: 18px 20px 16px;
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.32);
 }
@@ -405,11 +405,11 @@ a {
 
 .sticky-panel-header {
   position: sticky;
-  top: 64px;
+  top: 0;
   z-index: 2;
-  margin: -20px -22px 14px;
-  padding: 18px 22px 13px;
-  background: rgba(18, 26, 43, 0.9);
+  margin: 0 0 14px;
+  padding: 0 0 12px;
+  background: linear-gradient(180deg, rgba(18, 26, 43, 0.96), rgba(18, 26, 43, 0.82));
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.045);
 }
@@ -691,6 +691,7 @@ kbd {
 .transaction-table-wrap {
   width: 100%;
   max-height: 520px;
+  margin: 0;
   overflow: auto;
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 8px;
@@ -698,9 +699,16 @@ kbd {
 
 .transaction-table {
   width: 100%;
-  min-width: 920px;
+  min-width: 860px;
   border-collapse: collapse;
+  table-layout: fixed;
   font-size: 0.82rem;
+}
+
+.transaction-table thead tr,
+.transaction-table tbody tr {
+  display: grid;
+  grid-template-columns: 13% 15% 9% 11% 12% 11% 12% 17%;
 }
 
 .transaction-table thead th {
@@ -718,13 +726,20 @@ kbd {
   text-transform: uppercase;
 }
 
+.transaction-table th,
+.transaction-table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .transaction-table thead th button {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   width: 100%;
   min-height: 38px;
-  padding: 10px 14px;
+  padding: 10px 12px;
   border: 0;
   background: transparent;
   color: inherit;
@@ -733,6 +748,11 @@ kbd {
   text-transform: inherit;
   letter-spacing: inherit;
   cursor: pointer;
+}
+
+.transaction-table thead th,
+.transaction-table tbody td {
+  min-width: 0;
 }
 
 .transaction-table thead th button:hover,
@@ -747,7 +767,7 @@ kbd {
 
 .transaction-table td {
   max-width: 230px;
-  padding: 10px 14px;
+  padding: 10px 10px 10px 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.045);
   color: var(--text-primary);
   overflow: hidden;
