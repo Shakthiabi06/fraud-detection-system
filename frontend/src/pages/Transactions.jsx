@@ -41,7 +41,7 @@ export default function Transactions() {
           <span className="tech-mono">
             {loading ? "Syncing..." : `${transactions.length} rows`}
           </span>
-          <small>Frontend-only mode</small>
+          <small>{loading ? "Syncing..." : `Live data (${transactions.length} rows)`}</small>
         </div>
       </header>
 

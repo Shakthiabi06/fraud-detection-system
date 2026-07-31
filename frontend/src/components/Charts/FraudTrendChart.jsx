@@ -12,7 +12,6 @@ import {
   Filler
 } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
-import { analyticsData } from '../../mock/sampleData';
 
 ChartJS.register(
   CategoryScale,
@@ -26,12 +25,7 @@ ChartJS.register(
   Filler
 );
 
-export default function FraudTrendChart() {
-  // Read CSS variables once and memoize. Previously this ran on every
-  // render via getComputedStyle(document.documentElement), which is
-  // wasteful, and getPropertyValue() returns strings with a leading
-  // space (e.g. " #22c7d9") that we now trim to avoid subtle rendering
-  // issues if these values get used anywhere stricter than Chart.js.
+export default function FraudTrendChart({ transactions = [] }) {
   const colors = useMemo(() => {
     const styles = getComputedStyle(document.documentElement);
     return {
@@ -44,14 +38,36 @@ export default function FraudTrendChart() {
     };
   }, []);
 
+  // Calculate monthly trends from real transactions
+  const trendData = useMemo(() => {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const fraudCounts = Array(12).fill(0);
+    const totalCounts = Array(12).fill(0);
+    
+    transactions.forEach(txn => {
+      const date = new Date(txn.timestamp);
+      const month = date.getMonth();
+      totalCounts[month]++;
+      if (txn.prediction === 'Fraud') {
+        fraudCounts[month]++;
+      }
+    });
+    
+    return {
+      labels: months,
+      fraudCounts,
+      totalCounts,
+    };
+  }, [transactions]);
+
   const data = useMemo(
     () => ({
-      labels: analyticsData.monthlyTrends.labels,
+      labels: trendData.labels,
       datasets: [
         {
           type: 'line',
           label: 'Fraud Incidents',
-          data: analyticsData.monthlyTrends.fraudCounts,
+          data: trendData.fraudCounts,
           borderColor: colors.cyan,
           backgroundColor: 'rgba(34, 199, 217, 0.08)',
           pointBackgroundColor: colors.bgMain,
@@ -67,7 +83,7 @@ export default function FraudTrendChart() {
         {
           type: 'bar',
           label: 'Total Volume',
-          data: analyticsData.monthlyTrends.legitimateCounts,
+          data: trendData.totalCounts,
           backgroundColor: 'rgba(59, 130, 246, 0.18)',
           borderRadius: 5,
           barPercentage: 0.62,
@@ -76,7 +92,7 @@ export default function FraudTrendChart() {
         }
       ]
     }),
-    [colors]
+    [colors, trendData]
   );
 
   const options = useMemo(

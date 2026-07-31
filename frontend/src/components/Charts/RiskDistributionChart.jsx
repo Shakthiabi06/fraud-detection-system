@@ -7,16 +7,10 @@ import {
   Tooltip,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { analyticsData } from "../../mock/sampleData";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);
 
-export default function RiskDistributionChart() {
-  // Colors read once and memoized, instead of calling getComputedStyle on
-  // every render. Bar colors map Low/Medium/High/Critical to the same
-  // theme variables used everywhere else for risk levels (--green,
-  // --blue, --amber, --red — see .risk-badge classes in index.css),
-  // instead of separately hand-typed rgba() values.
+export default function RiskDistributionChart({ transactions = [] }) {
   const colors = useMemo(() => {
     const styles = getComputedStyle(document.documentElement);
     const green = styles.getPropertyValue("--green").trim();
@@ -35,20 +29,29 @@ export default function RiskDistributionChart() {
     };
   }, []);
 
+  // Calculate risk distribution from real transactions
+  const riskData = useMemo(() => {
+    const levels = ['Low', 'Medium', 'High', 'Critical'];
+    const counts = levels.map(level => {
+      return transactions.filter(txn => txn.risk_level === level).length;
+    });
+    return { labels: levels, data: counts };
+  }, [transactions]);
+
   const data = useMemo(
     () => ({
-      labels: analyticsData.riskDistribution.labels,
+      labels: riskData.labels,
       datasets: [
         {
           label: "Transactions",
-          data: analyticsData.riskDistribution.datasets,
+          data: riskData.data,
           backgroundColor: colors.barColors,
           borderRadius: 5,
           barPercentage: 0.62,
         },
       ],
     }),
-    [colors],
+    [colors, riskData],
   );
 
   const options = useMemo(

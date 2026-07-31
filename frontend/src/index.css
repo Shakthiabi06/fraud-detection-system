@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
 :root {
   --bg-main: #0b1020;
   --bg-card: #121a2b;
@@ -1286,3 +1288,333 @@ kbd {
     align-items: stretch;
   }
 }
+
+/* ============================================================
+   SENTINEL — Production polish layer
+   Appended to index.css — do not duplicate existing rules
+   ============================================================ */
+
+/* 1. Load Inter from Google Fonts as a fallback guarantee */
+
+/* 2. Fix badge borders to use CSS variables instead of hardcoded rgba */
+.low {
+  border-color: color-mix(in srgb, var(--green) 28%, transparent);
+  background: color-mix(in srgb, var(--green) 9%, transparent);
+  color: var(--green);
+}
+
+.medium {
+  border-color: color-mix(in srgb, var(--blue) 28%, transparent);
+  background: color-mix(in srgb, var(--blue) 9%, transparent);
+  color: var(--blue-light);
+}
+
+.high {
+  border-color: color-mix(in srgb, var(--amber) 32%, transparent);
+  background: color-mix(in srgb, var(--amber) 10%, transparent);
+  color: var(--amber);
+}
+
+.critical {
+  border-color: color-mix(in srgb, var(--red) 36%, transparent);
+  background: color-mix(in srgb, var(--red) 11%, transparent);
+  color: var(--red);
+}
+
+/* 3. Fix status-dot glow to use variable */
+.status-dot {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--green) 14%, transparent);
+}
+
+/* 4. Typography depth — section weight differentiation */
+.dashboard-title {
+  font-size: 1.82rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.panel-header h2 {
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+/* Kicker / eyebrow — more distinct from h2 */
+.panel-kicker,
+.eyebrow,
+.kpi-card > span:first-child {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+/* 5. Primary KPI card — make it dramatically dominant */
+.primary-kpi {
+  background:
+    linear-gradient(135deg, rgba(77, 114, 152, 0.12) 0%, rgba(255,255,255,0.01) 60%),
+    var(--bg-card);
+  border-color: rgba(77, 114, 152, 0.22);
+  box-shadow:
+    0 0 0 1px rgba(77, 114, 152, 0.08) inset,
+    0 12px 36px rgba(0, 0, 0, 0.36);
+}
+
+.primary-kpi p {
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, var(--text-primary) 60%, var(--blue-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 6. Chart card dominance — slightly heavier presence than risk panel */
+.chart-card {
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+}
+
+/* 7. Differentiated hover states per section type */
+
+/* Table rows: left border accent on hover instead of background wash */
+.transaction-table tbody tr {
+  position: relative;
+  transition: background 0.12s ease;
+}
+
+.transaction-table tbody tr::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--blue-light);
+  opacity: 0;
+  transition: opacity 0.14s ease;
+}
+
+.transaction-table tbody tr:hover::before {
+  opacity: 1;
+}
+
+.transaction-table tbody tr:hover td {
+  background: rgba(77, 114, 152, 0.06);
+  cursor: pointer;
+}
+
+/* Risk rows: slide-right micro motion */
+.risk-row {
+  transition: background 0.14s ease, border-color 0.14s ease, padding-left 0.14s ease;
+}
+
+.risk-row:hover {
+  padding-left: 14px;
+  border-color: rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Top-flagged rows: scale accent */
+.top-flagged-row {
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+
+.top-flagged-row:hover {
+  transform: translateX(3px);
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+/* 8. Button tactile press */
+.iforest-run-button,
+.pagination-bar button,
+.segmented-control button {
+  transition: transform 0.1s ease, background 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease;
+}
+
+.iforest-run-button:active:not(:disabled),
+.pagination-bar button:active:not(:disabled) {
+  transform: scale(0.97) translateY(1px);
+}
+
+.segmented-control button:active {
+  transform: scale(0.96);
+}
+
+/* 9. Entrance animations — staggered card reveal on mount */
+@keyframes sentinel-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sentinel-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.kpi-card {
+  animation: sentinel-fade-up 0.4s ease both;
+}
+
+/* Stagger each KPI card by index — applied via nth-child */
+.kpi-grid > *:nth-child(1) { animation-delay: 0.05s; }
+.kpi-grid > *:nth-child(2) { animation-delay: 0.12s; }
+.kpi-grid > *:nth-child(3) { animation-delay: 0.18s; }
+.kpi-grid > *:nth-child(4) { animation-delay: 0.24s; }
+
+.chart-card {
+  animation: sentinel-fade-up 0.45s 0.1s ease both;
+}
+
+.risk-panel {
+  animation: sentinel-fade-up 0.45s 0.18s ease both;
+}
+
+.insight-card {
+  animation: sentinel-fade-up 0.4s 0.22s ease both;
+}
+
+.table-card {
+  animation: sentinel-fade-up 0.4s 0.28s ease both;
+}
+
+/* 10. Slightly inconsistent card padding (realism tweak from spec) */
+.chart-card {
+  padding: 22px 24px 20px;
+}
+
+.risk-panel {
+  padding: 20px 15px 18px;
+}
+
+.insight-card:first-child {
+  padding: 20px 20px 18px;
+}
+
+.insight-card.dense-insight {
+  padding: 16px 18px 14px;
+}
+
+/* 11. Inner border glow on card hover — spec says subtle inset, not outer */
+.chart-card,
+.insight-card,
+.table-card,
+.risk-panel {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chart-card:hover,
+.insight-card:hover {
+  border-color: rgba(255, 255, 255, 0.09);
+  box-shadow:
+    0 0 0 1px rgba(77, 114, 152, 0.1) inset,
+    0 14px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* 12. Confusion matrix cells — entrance stagger */
+.confusion-cell {
+  animation: sentinel-fade-up 0.35s ease both;
+  transition: transform 0.14s ease, border-color 0.14s ease;
+}
+
+.confusion-cell:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.confusion-grid > *:nth-child(1) { animation-delay: 0.05s; }
+.confusion-grid > *:nth-child(2) { animation-delay: 0.1s; }
+.confusion-grid > *:nth-child(3) { animation-delay: 0.15s; }
+.confusion-grid > *:nth-child(4) { animation-delay: 0.2s; }
+
+/* 13. Metric cards — tighter hover on Analytics */
+.metric-card {
+  transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease;
+  animation: sentinel-fade-up 0.4s ease both;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.metric-definition-grid > *:nth-child(1) { animation-delay: 0.06s; }
+.metric-definition-grid > *:nth-child(2) { animation-delay: 0.12s; }
+.metric-definition-grid > *:nth-child(3) { animation-delay: 0.18s; }
+.metric-definition-grid > *:nth-child(4) { animation-delay: 0.24s; }
+
+/* 14. Run status — pulse the dot when syncing */
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.status-dot.syncing {
+  animation: status-pulse 1.2s ease-in-out infinite;
+  background: var(--amber);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--amber) 14%, transparent);
+}
+
+/* 15. Isolation Forest section — special treatment */
+.iforest-section {
+  border-color: rgba(77, 114, 152, 0.16);
+  background: linear-gradient(
+    135deg,
+    rgba(77, 114, 152, 0.04) 0%,
+    var(--bg-card) 40%
+  );
+}
+
+.iforest-run-button {
+  background: linear-gradient(135deg, var(--bg-elevated) 0%, rgba(77, 114, 152, 0.15) 100%);
+  border-color: rgba(77, 114, 152, 0.3);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.iforest-run-button:hover:not(:disabled) {
+  border-color: rgba(77, 114, 152, 0.5);
+  box-shadow: 0 6px 18px rgba(77, 114, 152, 0.18);
+  transform: translateY(-1px);
+}
+
+/* Tree visualization container */
+.tree-viz-container {
+  width: 100%;
+  margin: 16px 0;
+  border: 1px solid rgba(255, 255, 255, 0.045);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+/* 16. Reduce spacing on mobile for iforest */
+@media (max-width: 760px) {
+  .primary-kpi p {
+    font-size: 1.8rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.4rem;
+  }
+}
+
+.status-dot.healthy {
+  background: #22c55e;
+  animation: none;
+}
+.status-dot.syncing {
+  background: #f59e0b;
+  animation: pulse 1.5s infinite;
+}
+

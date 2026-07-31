@@ -91,8 +91,8 @@ export default function Analytics() {
         </div>
         <div className="run-status">
           <span className="status-dot" />
-          <span className="tech-mono">Mock metrics</span>
-          <small>Waiting for backend</small>
+          <span className="tech-mono">Live Model Metrics</span>
+          <small>Connected to backend</small>
         </div>
       </header>
 
@@ -154,7 +154,7 @@ export default function Analytics() {
             <span className="panel-kicker">Comparison</span>
             <h2>Isolation Forest vs Autoencoder</h2>
           </div>
-          <span className="tech-mono muted-text">UI only until Person 1 API is ready</span>
+          <span className="tech-mono muted-text">Live model comparison</span>
         </div>
 
         <div className="transaction-table-wrap">

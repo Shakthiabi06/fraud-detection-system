@@ -6,16 +6,10 @@ import {
   Tooltip,
 } from "chart.js";
 import { Pie } from "react-chartjs-2";
-import { analyticsData } from "../../mock/sampleData";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function FraudByCountryChart() {
-  // Colors read once and memoized, instead of calling getComputedStyle on
-  // every render. Slice colors are built from the actual theme variables
-  // (--blue, --cyan, --green, --amber, --red) via color-mix() for opacity,
-  // instead of hand-typed rgba() numbers that only approximately matched
-  // the theme and wouldn't follow it if the variables ever changed.
+export default function FraudByCountryChart({ transactions = [] }) {
   const colors = useMemo(() => {
     const styles = getComputedStyle(document.documentElement);
     const blue = styles.getPropertyValue("--blue").trim();
@@ -39,19 +33,32 @@ export default function FraudByCountryChart() {
     };
   }, []);
 
-  const data = useMemo(
+  // Calculate country distribution from real transactions
+  const countryData = useMemo(() => {
+    const counts = transactions.reduce((acc, txn) => {
+      const country = txn.country || 'Unknown';
+      acc[country] = (acc[country] || 0) + 1;
+      return acc;
+    }, {});
+    
+    const labels = Object.keys(counts);
+    const data = Object.values(counts);
+    return { labels, data };
+  }, [transactions]);
+
+  const chartData = useMemo(
     () => ({
-      labels: analyticsData.countryDistribution.labels,
+      labels: countryData.labels.length > 0 ? countryData.labels : ['No Data'],
       datasets: [
         {
-          data: analyticsData.countryDistribution.datasets,
+          data: countryData.data.length > 0 ? countryData.data : [1],
           backgroundColor: colors.sliceColors,
           borderColor: colors.bgCard,
           borderWidth: 2,
         },
       ],
     }),
-    [colors],
+    [colors, countryData],
   );
 
   const options = useMemo(
@@ -82,7 +89,7 @@ export default function FraudByCountryChart() {
 
   return (
     <div className="mini-chart-frame">
-      <Pie data={data} options={options} />
+      <Pie data={chartData} options={options} />
     </div>
   );
 }

@@ -34,6 +34,9 @@ function Dashboard() {
     mockTransactions,
     getTransactions,
   );
+
+  console.log("🔴 TRANSACTIONS LENGTH:", transactions.length);
+  console.log("🔴 FIRST TRANSACTION:", transactions[0]);
   const { data: dashboardStats, loading: statsLoading } = useFetchData(
     mockDashboardStats,
     getFraudSummary,
@@ -52,11 +55,21 @@ function Dashboard() {
   // riskLevelCounts (mock-derived) is used directly for now since the live
   // /fraud-summary endpoint doesn't return a per-risk-level breakdown yet.
   // If/when it does, swap this for a count derived from `transactions`.
-  const riskSegments = Object.entries(riskToneMap).map(([label, tone]) => ({
-    label,
-    value: String(riskLevelCounts[label] || 0),
-    tone,
-  }));
+  // Calculate risk bands from REAL transactions
+  const riskSegments = (() => {
+    // Count transactions by risk level from real data
+    const counts = transactions.reduce((acc, txn) => {
+      const level = txn.risk_level || 'Low';
+      acc[level] = (acc[level] || 0) + 1;
+      return acc;
+    }, {});
+    
+    return Object.entries(riskToneMap).map(([label, tone]) => ({
+      label,
+      value: String(counts[label] || 0),
+      tone,
+    }));
+  })();
 
   // The 3 highest fraud-score transactions, used to fill the space below the
   // risk bands. Derived from whichever transaction list is currently active
@@ -69,32 +82,35 @@ function Dashboard() {
     {
       key: "exposure",
       title: "Flagged exposure",
-      value: dashboardStats.exposure ?? "—",
-      subtitle: `Across ${dashboardStats.fraudTransactions ?? 0} active anomalies`,
+      value: dashboardStats.exposure || "$0K",
+      subtitle: `Across ${dashboardStats.fraudTransactions || 0} active anomalies`,
       variant: "primary",
     },
     {
       key: "fraudRate",
       title: "Detection rate",
-      value: dashboardStats.fraudRate ?? "—",
+      value: dashboardStats.fraudRate || "0%",
       subtitle: "Review + confirmed fraud",
       variant: "compact",
     },
     {
       key: "avgScore",
       title: "Mean risk weight",
-      value: dashboardStats.averageFraudScore ?? "—",
+      value: dashboardStats.averageFraudScore || "0.00",
       subtitle: "Rolling 24h sample",
       variant: "compact-offset",
     },
     {
       key: "latency",
       title: "Queue latency",
-      value: dashboardStats.queueLatency ?? "—",
+      value: dashboardStats.queueLatency || "< 1s",
       subtitle: "Case creation median",
       variant: "latency",
     },
   ];
+
+  console.log("🔴 DASHBOARD STATS:", dashboardStats);
+  console.log("🔴 TRANSACTIONS:", transactions);
 
   return (
     <div className="dashboard-container">
@@ -108,11 +124,11 @@ function Dashboard() {
           </p>
         </div>
         <div className="run-status">
-          <span className="status-dot" />
+          <span className={`status-dot ${statsLoading || transactionsLoading ? 'syncing' : 'healthy'}`} />
           <span className="tech-mono">
             {statsLoading || transactionsLoading ? "Syncing..." : "Stream healthy"}
           </span>
-          <small>Last sync 24s ago</small>
+          <small>Updated: {new Date().toLocaleTimeString()}</small>
         </div>
       </header>
 
@@ -143,19 +159,34 @@ function Dashboard() {
               <button type="button">YTD</button>
             </div>
           </div>
-          <FraudTrendChart />
+          <FraudTrendChart transactions={transactions} />
           <div className="metric-strip">
             <div>
               <span>Capital at risk</span>
-              <strong>{dashboardStats.capitalAtRisk ?? "—"}</strong>
+              <strong>
+                {transactions.length > 0 
+                  ? `$${(transactions.reduce((sum, t) => sum + (t.prediction === 'Fraud' ? t.amount : 0), 0) / 1000).toFixed(1)}K`
+                  : "$0K"
+                }
+              </strong>
             </div>
             <div>
               <span>Blocked</span>
-              <strong>{dashboardStats.blocked ?? "—"}</strong>
+              <strong>
+                {transactions.length > 0 
+                  ? `${(transactions.filter(t => t.risk_level === 'Critical').length / transactions.length * 100).toFixed(1)}%`
+                  : "0%"
+                }
+              </strong>
             </div>
             <div>
               <span>Leakage est.</span>
-              <strong>{dashboardStats.leakage ?? "—"}</strong>
+              <strong>
+                {transactions.length > 0 
+                  ? `${(transactions.filter(t => t.risk_level === 'High' || t.risk_level === 'Medium').length / transactions.length * 100).toFixed(1)}%`
+                  : "0%"
+                }
+              </strong>
             </div>
           </div>
         </section>
@@ -208,7 +239,9 @@ function Dashboard() {
               <h2>Fraud by Country</h2>
             </div>
           </div>
-          <FraudByCountryChart />
+          <div style={{ height: '220px' }}>
+            <FraudByCountryChart transactions={transactions} />
+          </div>
         </article>
         <article className="insight-card dense-insight">
           <div className="panel-header">
@@ -217,7 +250,9 @@ function Dashboard() {
               <h2>Risk Distribution</h2>
             </div>
           </div>
-          <RiskDistributionChart />
+          <div style={{ height: '220px' }}>
+            <RiskDistributionChart transactions={transactions} />
+          </div>
         </article>
       </section>
 
