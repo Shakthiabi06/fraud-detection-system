@@ -1,0 +1,38 @@
+# Create .gitignore file
+@"
+# Large data files (don't commit these!)
+*.csv
+*.pkl
+*.h5
+*.pt
+*.onnx
+*.joblib
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+env/
+*.pyc
+
+# Node
+node_modules/
+dist/
+build/
+*.log
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+"@ | Out-File -FilePath .gitignore -Encoding utf8
