@@ -25,6 +25,7 @@ const riskToneMap = {
 
 function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [chartRange, setChartRange] = useState("YTD");
 
   // In mock mode (USE_LIVE_API=false), these behave exactly as before —
   // transactions/dashboardStats come straight from sampleData.js with no
@@ -152,14 +153,30 @@ function Dashboard() {
               <h2>Volume vs confirmed fraud</h2>
             </div>
             <div className="segmented-control" aria-label="Chart range">
-              <button type="button">1D</button>
-              <button className="active" type="button">
+              <button
+                type="button"
+                className={chartRange === "1D" ? "active" : ""}
+                onClick={() => setChartRange("1D")}
+              >
+                1D
+              </button>
+              <button
+                className={chartRange === "1M" ? "active" : ""}
+                type="button"
+                onClick={() => setChartRange("1M")}
+              >
                 1M
               </button>
-              <button type="button">YTD</button>
+              <button
+                type="button"
+                className={chartRange === "YTD" ? "active" : ""}
+                onClick={() => setChartRange("YTD")}
+              >
+                YTD
+              </button>
             </div>
           </div>
-          <FraudTrendChart transactions={transactions} />
+          <FraudTrendChart transactions={transactions} range={chartRange} />
           <div className="metric-strip">
             <div>
               <span>Capital at risk</span>

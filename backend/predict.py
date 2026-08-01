@@ -6,11 +6,11 @@ import numpy as np
 model = joblib.load("model/isolation_forest.pkl")
 
 def predict_transaction(data):
-    """Original function - returns just 'Fraud' or 'Legit'"""
+    """Original function - returns just 'Fraud' or 'Legitimate'"""
     df = pd.DataFrame([data])
     df = df.reindex(columns=model.feature_names_in_, fill_value=0)
     pred = model.predict(df)
-    return "Fraud" if pred[0] == -1 else "Legit"
+    return "Fraud" if pred[0] == -1 else "Legitimate"
 
 # ADD THIS NEW FUNCTION:
 def predict_transaction_with_score(data):
@@ -23,7 +23,7 @@ def predict_transaction_with_score(data):
     
     # Get prediction
     pred = model.predict(df)
-    prediction = "Fraud" if pred[0] == -1 else "Legit"
+    prediction = "Fraud" if pred[0] == -1 else "Legitimate"
     
     # Get decision score (distance from normal)
     score = model.decision_function(df)

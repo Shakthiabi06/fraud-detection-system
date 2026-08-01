@@ -44,7 +44,7 @@ export const getTransactions = async () => {
       country: txn.country ?? null,
       merchant: txn.merchant || 'Unknown',
       fraud_score: txn.fraud_score ?? 0,
-      prediction: txn.prediction || 'Legit',
+      prediction: txn.prediction || 'Legitimate',
       risk_level: txn.risk_level || 'Low',
       alert_triggered: txn.alert_triggered ?? false,
       timestamp: txn.created_at || new Date().toISOString(),

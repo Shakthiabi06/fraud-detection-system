@@ -157,8 +157,8 @@ export default function Analytics() {
           <span className="tech-mono muted-text">Live model comparison</span>
         </div>
 
-        <div className="transaction-table-wrap">
-          <table className="transaction-table static-table">
+        <div className="comparison-table-wrap">
+          <table className="comparison-table">
             <thead>
               <tr>
                 <th>Model Architecture</th>

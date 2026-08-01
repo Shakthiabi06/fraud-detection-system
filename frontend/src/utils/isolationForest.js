@@ -85,18 +85,34 @@ function pathLength(point, node, currentDepth) {
 // 0-1 anomaly score via 2^(-avgPathLength / c(n)).
 // Score close to 1 -> isolated quickly -> likely anomaly.
 // Score close to 0.5 or below -> took many splits -> likely normal.
-export function runIsolationForest(points, { numTrees = 100, subSampleSize = 256 } = {}) {
+export async function runIsolationForest(
+  points,
+  { numTrees = 100, subSampleSize = 256 } = {},
+  onProgress,
+) {
   const n = points.length;
   const effectiveSubSample = Math.min(subSampleSize, n);
   const maxDepth = Math.ceil(Math.log2(Math.max(effectiveSubSample, 2)));
 
   const trees = [];
+  const batchSize = Math.max(1, Math.ceil(numTrees / 8));
+  const animationDelayMs = 160;
+
   for (let i = 0; i < numTrees; i += 1) {
     const sample = [];
     for (let j = 0; j < effectiveSubSample; j += 1) {
       sample.push(points[Math.floor(Math.random() * n)]);
     }
     trees.push(buildTree(sample, 0, maxDepth));
+
+    if (onProgress && (i + 1) % batchSize === 0) {
+      onProgress({ built: i + 1, total: numTrees, mode: "tree-build" });
+      await new Promise((resolve) => setTimeout(resolve, animationDelayMs));
+    }
+  }
+
+  if (onProgress) {
+    onProgress({ built: numTrees, total: numTrees, mode: "tree-build" });
   }
 
   const normalizer = averagePathLength(effectiveSubSample);

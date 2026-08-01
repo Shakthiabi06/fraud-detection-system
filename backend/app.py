@@ -94,7 +94,7 @@ class TransactionResponse(BaseModel):
     """Fraud prediction response"""
     transaction_id: Optional[str] = None
     fraud_score: float
-    prediction: str  # "Fraud" or "Legit"
+    prediction: str  # "Fraud" or "Legitimate"
     risk_level: str  # "Critical", "High", "Medium", "Low"
     alert_triggered: bool
 
@@ -212,7 +212,7 @@ async def get_transactions(limit: int = 100):
                 "country": random.choice(['US', 'UK', 'CA', 'AU', 'DE']),
                 "merchant": random.choice(['Amazon', 'Apple', 'Walmart', 'Target', 'Best Buy']),
                 "fraud_score": round(fraud_score, 4),
-                "prediction": "Fraud" if fraud_score > 0.7 else "Legit",
+                "prediction": "Fraud" if fraud_score > 0.7 else "Legitimate",
                 "risk_level": "Critical" if fraud_score > 0.8 else "High" if fraud_score > 0.6 else "Medium" if fraud_score > 0.4 else "Low",
                 "alert_triggered": fraud_score > 0.7,
                 "created_at": datetime.now().isoformat()

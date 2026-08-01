@@ -25,7 +25,7 @@ ChartJS.register(
   Filler
 );
 
-export default function FraudTrendChart({ transactions = [] }) {
+export default function FraudTrendChart({ transactions = [], range = "1M" }) {
   const colors = useMemo(() => {
     const styles = getComputedStyle(document.documentElement);
     return {
@@ -38,27 +38,110 @@ export default function FraudTrendChart({ transactions = [] }) {
     };
   }, []);
 
-  // Calculate monthly trends from real transactions
+  // Aggregate the same transaction stream into a range-appropriate series so
+  // the dashboard tabs show distinct 1D / 1M / YTD views instead of a static
+  // year-long monthly chart.
   const trendData = useMemo(() => {
+    const seriesTransactions = transactions
+      .map((txn) => {
+        const timestamp = txn.timestamp ?? txn.created_at;
+        const date = new Date(timestamp);
+        if (Number.isNaN(date.getTime())) return null;
+        return { ...txn, date };
+      })
+      .filter(Boolean);
+
+    if (seriesTransactions.length === 0) {
+      return {
+        labels: range === '1D' ? ['Now'] : range === 'YTD' ? ['Jan'] : ['Week 1'],
+        fraudCounts: [0],
+        totalCounts: [0],
+      };
+    }
+
+    const maxDate = new Date(
+      Math.max(...seriesTransactions.map((txn) => txn.date.getTime())),
+    );
+
+    if (range === '1D') {
+      const labels = [];
+      const fraudCounts = [];
+      const totalCounts = [];
+      const start = new Date(maxDate);
+      start.setHours(maxDate.getHours() - 23, 0, 0, 0);
+
+      for (let hour = 0; hour < 24; hour += 1) {
+        const bucketStart = new Date(start);
+        bucketStart.setHours(start.getHours() + hour);
+        const bucketEnd = new Date(bucketStart);
+        bucketEnd.setHours(bucketStart.getHours() + 1);
+
+        labels.push(bucketStart.toLocaleTimeString([], { hour: 'numeric' }));
+        fraudCounts.push(0);
+        totalCounts.push(0);
+
+        seriesTransactions.forEach((txn) => {
+          if (txn.date >= bucketStart && txn.date < bucketEnd) {
+            totalCounts[hour] += 1;
+            if (txn.prediction === 'Fraud') {
+              fraudCounts[hour] += 1;
+            }
+          }
+        });
+      }
+
+      return { labels, fraudCounts, totalCounts };
+    }
+
+    if (range === '1M') {
+      const labels = [];
+      const fraudCounts = [];
+      const totalCounts = [];
+      const start = new Date(maxDate);
+      start.setDate(maxDate.getDate() - 29);
+
+      for (let day = 0; day < 30; day += 1) {
+        const bucketStart = new Date(start);
+        bucketStart.setDate(start.getDate() + day);
+        bucketStart.setHours(0, 0, 0, 0);
+        const bucketEnd = new Date(bucketStart);
+        bucketEnd.setDate(bucketStart.getDate() + 1);
+
+        labels.push(bucketStart.toLocaleDateString([], { month: 'short', day: 'numeric' }));
+        fraudCounts.push(0);
+        totalCounts.push(0);
+
+        seriesTransactions.forEach((txn) => {
+          if (txn.date >= bucketStart && txn.date < bucketEnd) {
+            totalCounts[day] += 1;
+            if (txn.prediction === 'Fraud') {
+              fraudCounts[day] += 1;
+            }
+          }
+        });
+      }
+
+      return { labels, fraudCounts, totalCounts };
+    }
+
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const fraudCounts = Array(12).fill(0);
     const totalCounts = Array(12).fill(0);
-    
-    transactions.forEach(txn => {
-      const date = new Date(txn.timestamp);
-      const month = date.getMonth();
-      totalCounts[month]++;
+
+    seriesTransactions.forEach((txn) => {
+      const month = txn.date.getMonth();
+      totalCounts[month] += 1;
       if (txn.prediction === 'Fraud') {
-        fraudCounts[month]++;
+        fraudCounts[month] += 1;
       }
     });
-    
+
     return {
       labels: months,
       fraudCounts,
       totalCounts,
     };
-  }, [transactions]);
+  }, [transactions, range]);
 
   const data = useMemo(
     () => ({

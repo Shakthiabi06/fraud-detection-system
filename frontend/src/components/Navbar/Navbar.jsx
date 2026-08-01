@@ -57,8 +57,8 @@ export default function Navbar() {
           {hasAlerts && <span />}
         </button>
         <button className="profile-button" type="button">
-          <span>SK</span>
-          <strong>Shakthi</strong>
+          <span>S^2</span>
+          <strong>SxS</strong>
         </button>
       </div>
     </nav>

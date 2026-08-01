@@ -19,22 +19,28 @@ export default function LiveIsolationForest() {
   const [hasRun, setHasRun] = useState(false);
   const [scores, setScores] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
+  const [progress, setProgress] = useState({ built: 0, total: numTrees, mode: "tree-build" });
 
-  const handleRun = () => {
+  const handleRun = async () => {
     setIsRunning(true);
-    // Yielding to the next tick keeps the "Running..." state visible even
-    // though this dataset is small enough to compute almost instantly —
-    // on a larger point count this would matter for real.
-    setTimeout(() => {
-      const points = extractFeatures(transactions);
-      const result = runIsolationForest(points, {
+    setHasRun(false);
+    setProgress({ built: 0, total: numTrees, mode: "tree-build" });
+
+    const points = extractFeatures(transactions);
+    const result = await runIsolationForest(
+      points,
+      {
         numTrees,
         subSampleSize: points.length,
-      });
-      setScores(result);
-      setHasRun(true);
-      setIsRunning(false);
-    }, 50);
+      },
+      (update) => {
+        setProgress(update);
+      },
+    );
+
+    setScores(result);
+    setHasRun(true);
+    setIsRunning(false);
   };
 
   const rankedResults = useMemo(() => {
@@ -43,6 +49,11 @@ export default function LiveIsolationForest() {
       .map((txn, index) => ({ txn, score: scores[index] }))
       .sort((a, b) => b.score - a.score);
   }, [scores]);
+
+  const treeProgress = Math.max(
+    0,
+    Math.min(1, progress.built / Math.max(progress.total, 1)),
+  );
 
   return (
     <section className="iforest-section" aria-label="Live isolation forest">
@@ -90,10 +101,27 @@ export default function LiveIsolationForest() {
         </button>
       </div>
 
+      {isRunning && (
+        <div className="iforest-progress" aria-live="polite">
+          <div className="iforest-progress-row">
+            <span className="tech-mono">Building forest</span>
+            <span className="tech-mono">
+              {progress.built}/{progress.total} trees
+            </span>
+          </div>
+          <div className="iforest-progress-bar" aria-hidden="true">
+            <div
+              className="iforest-progress-fill"
+              style={{ width: `${treeProgress * 100}%` }}
+            />
+          </div>
+        </div>
+      )}
+
       {hasRun && (
         <div className="iforest-results">
-          <div className="transaction-table-wrap">
-            <table className="transaction-table static-table">
+          <div className="iforest-result-table-wrap">
+            <table className="iforest-result-table">
               <thead>
                 <tr>
                   <th>Rank</th>
