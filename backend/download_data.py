@@ -1,8 +1,13 @@
 import os
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from sklearn.datasets import make_classification
+
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "data"
+DATA_FILE = DATA_DIR / "creditcard.csv"
 
 
 def download_dataset():
@@ -14,11 +19,10 @@ def download_dataset():
     self-contained and removes the LFS dependency from the build pipeline.
     """
 
-    os.makedirs("data", exist_ok=True)
-    file_path = "data/creditcard.csv"
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-    if os.path.exists(file_path):
-        print(f"✅ Dataset already exists at {file_path}")
+    if DATA_FILE.exists():
+        print(f"✅ Dataset already exists at {DATA_FILE}")
         return True
 
     print("📥 Dataset not present in the repo checkout. Generating a deterministic fallback CSV for build-time training...")
@@ -41,8 +45,8 @@ def download_dataset():
     frame.insert(30, "Amount", np.round(np.abs(rng.normal(loc=75, scale=120, size=len(frame))), 2))
     frame["Class"] = labels
 
-    frame.to_csv(file_path, index=False)
-    print(f"✅ Generated fallback dataset at {file_path}")
+    frame.to_csv(DATA_FILE, index=False)
+    print(f"✅ Generated fallback dataset at {DATA_FILE}")
     return True
 
 
