@@ -1,9 +1,14 @@
+from pathlib import Path
+
 import joblib
-import pandas as pd
 import numpy as np
+import pandas as pd
+
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_FILE = BASE_DIR / "model" / "isolation_forest.pkl"
 
 # Load model
-model = joblib.load("model/isolation_forest.pkl")
+model = joblib.load(MODEL_FILE)
 
 def predict_transaction(data):
     """Original function - returns just 'Fraud' or 'Legitimate'"""

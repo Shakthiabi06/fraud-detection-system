@@ -1,16 +1,35 @@
+import sys
+from pathlib import Path
+
+import joblib
 import pandas as pd
 from sklearn.ensemble import IsolationForest
-import joblib
 
-df = pd.read_csv("data/creditcard.csv")
+BASE_DIR = Path(__file__).resolve().parent
+DATA_FILE = BASE_DIR / "data" / "creditcard.csv"
+MODEL_DIR = BASE_DIR / "model"
+MODEL_FILE = MODEL_DIR / "isolation_forest.pkl"
+
+MODEL_DIR.mkdir(parents=True, exist_ok=True)
+
+if MODEL_FILE.exists():
+    print("✅ Model already exists, skipping training!")
+    sys.exit(0)
+
+if not DATA_FILE.exists():
+    from download_data import download_dataset
+
+    download_dataset()
+
+df = pd.read_csv(DATA_FILE)
 X = df.drop("Class", axis=1)
 
 model = IsolationForest(
     n_estimators=200,
     contamination=0.002,
-    random_state=42
+    random_state=42,
 )
 model.fit(X)
 
-joblib.dump(model, "model/isolation_forest.pkl")
+joblib.dump(model, MODEL_FILE)
 print("Model Saved")

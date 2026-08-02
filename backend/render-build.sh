@@ -6,26 +6,17 @@ cd "$BASE_DIR"
 
 echo "🚀 Starting Render build process..."
 
-# Install Python dependencies
 echo "📦 Installing Python packages..."
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 
-# Always ensure the CSV exists for training. This avoids Render depending on
-# a Git LFS-managed checkout for the large dataset artifact.
-echo "🔍 Checking for dataset..."
-if [ ! -f "data/creditcard.csv" ]; then
-    echo "📥 Dataset not found, generating fallback dataset..."
-    python download_data.py
-fi
-
-# Check if model exists, if not train it
-echo "🔍 Checking for trained model..."
-if [ ! -f "model/isolation_forest.pkl" ]; then
-    echo "🤖 Training model..."
-    python train.py
+echo "🔍 Checking for shipped model artifact..."
+if [ -f "model/isolation_forest.pkl" ]; then
+    echo "✅ Model already in repo, skipping training"
 else
-    echo "✅ Model already exists, skipping training"
+    echo "📥 Model missing from repo checkout, generating fallback dataset and training it"
+    python download_data.py
+    python train.py
 fi
 
 echo "✅ Build completed successfully!"
