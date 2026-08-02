@@ -1,9 +1,4 @@
 #!/bin/bash
-
-#!/bin/bash
-set -euo pipefail
-
-#!/bin/bash
 set -euo pipefail
 
 BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -13,8 +8,8 @@ echo "🚀 Starting Render build process..."
 
 # Install Python dependencies
 echo "📦 Installing Python packages..."
-pip install --upgrade pip
-pip install -r requirements.txt
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 
 # Always ensure the CSV exists for training. This avoids Render depending on
 # a Git LFS-managed checkout for the large dataset artifact.
