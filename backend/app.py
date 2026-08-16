@@ -47,7 +47,12 @@ app = FastAPI(title="Credit Card Fraud Detection API")
 # Tighten CORS before production deployment.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "https://fraud-detection-system-kecvezl37-jujubee1.vercel.app",
+        "https://fraud-detection-system-*.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
